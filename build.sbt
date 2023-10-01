@@ -6,6 +6,8 @@ lazy val root = (project in file("."))
   .settings(
     name := "AmicusearchETL",
     libraryDependencies ++= Seq(
+      "com.warren-r" % "sparkutils_2.13" % "0.1.4",
+      "com.amazonaws" % "aws-java-sdk" % "1.12.560",
       "org.apache.spark" %% "spark-core" % "3.3.1",
       "org.apache.spark" %% "spark-sql" % "3.3.1",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
@@ -19,9 +21,9 @@ lazy val root = (project in file("."))
     )
   )
 
-assembly / test  := {}
-assembly / assemblyJarName  := "AmicusearchETL.jar"
+assembly / test := {}
+assembly / assemblyJarName := "AmicusearchETL.jar"
 assembly / assemblyMergeStrategy := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case PathList("META-INF", xs@_*) => MergeStrategy.discard
   case x => MergeStrategy.first
 }

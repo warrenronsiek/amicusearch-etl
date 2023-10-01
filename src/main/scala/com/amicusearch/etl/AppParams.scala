@@ -43,4 +43,5 @@ object AppParams {
       case _ => throw new IllegalArgumentException("Invalid arguments")
     }
   }
+
 }

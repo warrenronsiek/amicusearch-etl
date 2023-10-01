@@ -7,7 +7,7 @@ import org.apache.spark.sql.{SQLContext, SparkSession}
 class Main extends LazyLogging {
   def run(params: AppParams): Unit = {
     implicit val spark: SparkSession = SparkSession.builder
-      .master("local[*]").appName("mortgages").config(SparkConf.conf).getOrCreate()
+      .config(SparkConf.conf).getOrCreate()
     implicit val sc: SparkContext = spark.sparkContext
     implicit val sql: SQLContext = spark.sqlContext
     val conf: Config = ConfigFactory.load(params.env match {
