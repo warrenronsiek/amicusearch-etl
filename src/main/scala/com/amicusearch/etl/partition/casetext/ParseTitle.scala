@@ -19,11 +19,11 @@ object ParseTitle {
 
     df.map((r:Row) => CasetextCase(
       document_type = r.getAs[String]("type"),
-      document = r.getAs[String]("document"),
+      document = Some(r.getAs[String]("document")),
       title = parseTitle(r.getAs[String]("title")),
       court = Some(r.getAs[String]("court")),
-      date = r.getAs[String]("date"),
-      citation = r.getAs[String]("citation"),
+      date = Some(r.getAs[String]("date")),
+      citation = Some(r.getAs[String]("citation")),
       url = r.getAs[String]("url")
     ))
   }
