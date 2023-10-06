@@ -1,90 +1,46 @@
+import com.amicusearch.etl.read.ReadCourtsDB.schema
+import org.apache.spark.sql.functions._
 import scopt.OParser
+import org.apache.spark.sql.{DataFrame, SQLContext, SparkSession}
+import org.apache.spark.sql.types._
+import better.files._
 
-import java.io.File
-case class Config(
-                   foo: Int = -1,
-                   out: File = new File("."),
-                   xyz: Boolean = false,
-                   libName: String = "",
-                   maxCount: Int = -1,
-                   verbose: Boolean = false,
-                   debug: Boolean = false,
-                   mode: String = "",
-                   files: Seq[File] = Seq(),
-                   keepalive: Boolean = false,
-                   jars: Seq[File] = Seq(),
-                   kwargs: Map[String, String] = Map())
+val spark = SparkSession.builder().master("local[*]").appName("ReadCourtsDB").getOrCreate()
+//val inputFiles = File("/Users/warrenronsiek/Projects/amicusearch-etl/opinions_chunked").list
+//
+//inputFiles.map(file => {
+//  val df = spark.read
+//    .parquet(file.pathAsString)
+//  (file.name, df.schema)
+//}).reduce((a, b) => {
+//  if (a._2 != b._2) {
+//    println(s"Schema mismatch for ${a._1} and ${b._1}")
+//  }
+//  (a._1, a._2)
+//})
 
-val builder = OParser.builder[Config]
-val parser1 = {
-  import builder._
-  OParser.sequence(
-    programName("scopt"),
-    head("scopt", "4.x"),
-    opt[Int]('f', "foo")
-      .action((x, c) => c.copy(foo = x))
-      .text("foo is an integer property"),
-    opt[File]('o', "out")
-      .required()
-      .valueName("<file>")
-      .action((x, c) => c.copy(out = x))
-      .text("out is a required file property"),
-    opt[(String, Int)]("max")
-      .action({ case ((k, v), c) => c.copy(libName = k, maxCount = v) })
-      .validate(x =>
-        if (x._2 > 0) success
-        else failure("Value <max> must be >0"))
-      .keyValueName("<libname>", "<max>")
-      .text("maximum count for <libname>"),
-    opt[Seq[File]]('j', "jars")
-      .valueName("<jar1>,<jar2>...")
-      .action((x, c) => c.copy(jars = x))
-      .text("jars to include"),
-    opt[Map[String, String]]("kwargs")
-      .valueName("k1=v1,k2=v2...")
-      .action((x, c) => c.copy(kwargs = x))
-      .text("other arguments"),
-    opt[Unit]("verbose")
-      .action((_, c) => c.copy(verbose = true))
-      .text("verbose is a flag"),
-    opt[Unit]("debug")
-      .hidden()
-      .action((_, c) => c.copy(debug = true))
-      .text("this option is hidden in the usage text"),
-    help("help").text("prints this usage text"),
-    arg[File]("<file>...")
-      .unbounded()
-      .optional()
-      .action((x, c) => c.copy(files = c.files :+ x))
-      .text("optional unbounded args"),
-    note("some notes." + sys.props("line.separator")),
-    cmd("update")
-      .action((_, c) => c.copy(mode = "update"))
-      .text("update is a command.")
-      .children(
-        opt[Unit]("not-keepalive")
-          .abbr("nk")
-          .action((_, c) => c.copy(keepalive = false))
-          .text("disable keepalive"),
-        opt[Boolean]("xyz")
-          .action((x, c) => c.copy(xyz = x))
-          .text("xyz is a boolean property"),
-        opt[Unit]("debug-update")
-          .hidden()
-          .action((_, c) => c.copy(debug = true))
-          .text("this option is hidden in the usage text"),
-        checkConfig(
-          c =>
-            if (c.keepalive && c.xyz) failure("xyz cannot keep alive")
-            else success)
-      )
-  )
-}
+//val dfbig = spark.read.option("mergeSchema", "true").parquet("/Users/warrenronsiek/Projects/amicusearch-etl/opinions_chunked/")
+//dfbig.printSchema()
 
-// OParser.parse returns Option[Config]
-OParser.parse(parser1, args, Config()) match {
-  case Some(config) =>
-  // do something
-  case _ =>
-  // arguments are bad, error message will have been displayed
-}
+//val df1 = spark.read.parquet("/Users/warrenronsiek/Projects/amicusearch-etl/opinions_chunked/opinion-chunk-31.parquet")
+//df1.printSchema()
+//val df2 = spark.read.parquet("/Users/warrenronsiek/Projects/amicusearch-etl/opinions_chunked/")
+//df2.printSchema()
+////
+//df1.schema.toList.map(field => {
+//  val fieldName = field.name
+//  val fieldType = field.dataType
+//  val field2 = df2.schema.toList.find(_.name == fieldName).get
+//  val field2Type = field2.dataType
+//  if (fieldType != field2Type) {
+//    println(s"Type mismatch for $fieldName: $fieldType and $field2Type")
+//  }
+//})
+val df = spark.read
+  .parquet("/Users/warrenronsiek/Projects/amicusearch-etl/opinions_chunked/opinion-chunk-0.parquet")
+
+df.show(10)
+//df.printSchema()
+//
+//df.limit(20).write.option("overwrite", "true").json("/Users/warrenronsiek/Projects/amicusearch-etl/src/test/resources/courtlistener_opinions_sample")
+//println("Done!")

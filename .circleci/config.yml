@@ -1,0 +1,25 @@
+# circleci config that runs scala sbt tests
+
+version: 2.1
+_common:
+  cache_moneys: &cache_moneys
+    keys:
+      - v1-dependencies-{{ checksum "build.sbt" }}
+      - v1-dependencies-
+jobs:
+  test:
+    docker:
+      - image: cimg/openjdk:8.0.362
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache: *cache_moneys
+      - run:
+          name: run_tests
+          command: sbt test
+
+
+workflows:
+  build-test-deploy:
+    jobs:
+      - test
