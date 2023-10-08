@@ -19,6 +19,8 @@ class Main extends LazyLogging {
 
     params.mode match {
       case AppParams.Mode.partitionCasetext => ()
+      case AppParams.Mode.caseProcessor => ()
+      case AppParams.Mode.courtListener => ()
       case _ => logger.error("Invalid mode")
     }
   }

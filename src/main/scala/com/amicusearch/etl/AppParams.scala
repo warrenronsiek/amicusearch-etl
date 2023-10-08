@@ -6,7 +6,7 @@ case class AppParams(mode: AppParams.Mode.Value = AppParams.Mode.partitionCasete
 
 object AppParams {
   object Mode extends Enumeration {
-    val partitionCasetext, caseProcessor = Value
+    val partitionCasetext, caseProcessor, courtListener = Value
   }
 
   object Environment extends Enumeration {

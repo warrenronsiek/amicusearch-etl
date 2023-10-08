@@ -1,6 +1,7 @@
 package com.amicusearch.etl
 
 import com.amicusearch.etl.read.ReadCourtsDB
+import com.amicusearch.etl.read.courtlistener.{ReadCourtListenerCitations, ReadCourtListenerClusters, ReadCourtListenerCourts, ReadCourtListenerDockets, ReadCourtListenerOpinions}
 import com.warren_r.sparkutils.snapshot.SnapshotTest
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.{SparkConf, SparkContext}
@@ -25,4 +26,14 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
   val casetextPartitionParams: AppParams = new AppParams(AppParams.Mode.partitionCasetext, AppParams.Environment.local)
 
   val courtsDB: Unit => DataFrame = ReadCourtsDB("src/test/resources/courts_db_sample.json")
+  val courtListenerOpinions: Unit => DataFrame =
+    ReadCourtListenerOpinions(getResourcePath("courtlistener_opinions_sample.jsonl"), casetextPartitionParams.env)(sparkSession)
+  val courtListenerCitations: Unit => DataFrame =
+    ReadCourtListenerCitations(getResourcePath("courtlistener_citations_sample.jsonl"), casetextPartitionParams.env)(sparkSession)
+  val courtListenerCourts: Unit => DataFrame =
+    ReadCourtListenerCourts(getResourcePath("courtlistener_courts_sample.jsonl"), casetextPartitionParams.env)(sparkSession)
+  val courtListenerDockets: Unit => DataFrame =
+    ReadCourtListenerDockets(getResourcePath("courtlistener_dockets_sample.jsonl"), casetextPartitionParams.env)(sparkSession)
+  val courtListenerClusters: Unit => DataFrame =
+    ReadCourtListenerClusters(getResourcePath("courtlistener_opinion_cluster_sample.jsonl"), casetextPartitionParams.env)(sparkSession)
 }
