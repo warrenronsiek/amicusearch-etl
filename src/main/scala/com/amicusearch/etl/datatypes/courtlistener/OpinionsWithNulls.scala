@@ -2,6 +2,7 @@ package com.amicusearch.etl.datatypes.courtlistener
 
 case class OpinionsWithNulls(
                               id: String,
+                              plain_text: Option[String],
                               html: Option[String],
                               html_anon_2020: Option[String],
                               xml_harvard: Option[String],

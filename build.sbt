@@ -15,6 +15,8 @@ lazy val root = (project in file("."))
       "com.github.scopt" %% "scopt" % "4.1.0",
       "com.github.pathikrit" %% "better-files" % "3.9.1",
       "net.ruippeixotog" %% "scala-scraper" % "3.1.0",
+      "edu.stanford.nlp" % "stanford-corenlp" % "4.4.0",
+      "edu.stanford.nlp" % "stanford-corenlp" % "4.4.0" classifier "models",
       "org.scalatest" %% "scalatest" % "3.2.3" % Test, // higher levels can conflict with spark
       "ch.qos.logback" % "logback-classic" % "1.2.3" % Test,
       "ch.qos.logback" % "logback-core" % "1.2.3" % Test,
