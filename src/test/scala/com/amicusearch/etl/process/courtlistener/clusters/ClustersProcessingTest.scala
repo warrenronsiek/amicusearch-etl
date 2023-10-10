@@ -7,9 +7,10 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 class ClustersProcessingTest extends AnyFlatSpec with GenericAmicusearchTest {
 
+  val processedNulls: Unit => Dataset[ClusterWithNulls] = courtListenerClusters andThen ClusterParseNulls()
 
   "ClustersProcessingTest" should "parse nulls" in {
-    val df = opinionProcessedNulls().toDF().coalesce(1)
+    val df = processedNulls().toDF().coalesce(1)
     assertSnapshot("ProcessNulls", df, "id")
   }
 
