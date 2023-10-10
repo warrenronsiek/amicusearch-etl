@@ -1,6 +1,6 @@
 package com.amicusearch.etl.process.courtlistener.courts
 
-import com.amicusearch.etl.datatypes.courtlistener.Court
+import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import org.apache.spark.sql.{Dataset, SparkSession}
 
 object FilterCourts {
