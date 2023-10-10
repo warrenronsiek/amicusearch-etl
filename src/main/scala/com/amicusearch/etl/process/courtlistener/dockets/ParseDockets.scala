@@ -1,6 +1,6 @@
 package com.amicusearch.etl.process.courtlistener.dockets
 
-import com.amicusearch.etl.datatypes.courtlistener.DocketsWithNulls
+import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SQLContext, SparkSession}
 import com.amicusearch.etl.utils.Funcs
 

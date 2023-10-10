@@ -1,7 +1,7 @@
 package com.amicusearch.etl.process.courtlistener.opinions
 
 import com.amicusearch.etl.GenericAmicusearchTest
-import com.amicusearch.etl.datatypes.courtlistener.{OpinionsCleanWhitespace, OpinionsParsedHTML, OpinionsWithNulls}
+import com.amicusearch.etl.datatypes.courtlistener.opinions.{OpinionsCleanWhitespace, OpinionsParsedHTML, OpinionsWithNulls}
 import com.amicusearch.etl.process.courtlistener.opinions.RemoveTrivialOpinions
 import com.amicusearch.etl.utils.NLPParser
 import org.apache.spark.sql.Dataset

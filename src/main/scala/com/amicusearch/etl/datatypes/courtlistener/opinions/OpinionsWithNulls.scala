@@ -1,4 +1,4 @@
-package com.amicusearch.etl.datatypes.courtlistener
+package com.amicusearch.etl.datatypes.courtlistener.opinions
 
 case class OpinionsWithNulls(
                               id: String,

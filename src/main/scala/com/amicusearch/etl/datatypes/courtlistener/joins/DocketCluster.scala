@@ -1,4 +1,4 @@
-package com.amicusearch.etl.datatypes.courtlistener
+package com.amicusearch.etl.datatypes.courtlistener.joins
 
 case class DocketCluster(court_id: String,
                          court_citation_string: Option[String],

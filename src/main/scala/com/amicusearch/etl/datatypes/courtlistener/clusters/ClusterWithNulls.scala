@@ -1,4 +1,4 @@
-package com.amicusearch.etl.datatypes.courtlistener
+package com.amicusearch.etl.datatypes.courtlistener.clusters
 
 case class ClusterWithNulls(id: String,
                             date_filed: String,

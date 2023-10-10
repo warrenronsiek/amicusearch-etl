@@ -1,6 +1,7 @@
 package com.amicusearch.etl.process.courtlistener.joins
 
-import com.amicusearch.etl.datatypes.courtlistener.{ClusterWithNulls, CourtDocket, DocketCluster}
+import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
+import com.amicusearch.etl.datatypes.courtlistener.joins.{CourtDocket, DocketCluster}
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 object DocketsToClusters {

@@ -1,6 +1,6 @@
 package com.amicusearch.etl.process.courtlistener.opinions
 
-import com.amicusearch.etl.datatypes.courtlistener.{OpinionsParsedHTML, OpinionsCleanWhitespace}
+import com.amicusearch.etl.datatypes.courtlistener.opinions.{OpinionsCleanWhitespace, OpinionsParsedHTML}
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 object ParseWhitespace {

@@ -1,8 +1,10 @@
 package com.amicusearch.etl.process.courtlistener.joins
 
 import com.amicusearch.etl.GenericAmicusearchTest
-import com.amicusearch.etl.datatypes.courtlistener.{ClusterWithNulls, CourtDocket, DocketCluster, DocketsWithNulls}
+import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.courts.Court
+import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
+import com.amicusearch.etl.datatypes.courtlistener.joins.{CourtDocket, DocketCluster}
 import com.amicusearch.etl.process.courtlistener.clusters.ClusterParseNulls
 import com.amicusearch.etl.process.courtlistener.courts.{FilterCourts, ParseCourts}
 import com.amicusearch.etl.process.courtlistener.dockets.ParseDockets

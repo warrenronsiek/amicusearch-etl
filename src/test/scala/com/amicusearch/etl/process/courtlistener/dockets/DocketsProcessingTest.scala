@@ -1,7 +1,7 @@
 package com.amicusearch.etl.process.courtlistener.dockets
 
 import com.amicusearch.etl.GenericAmicusearchTest
-import com.amicusearch.etl.datatypes.courtlistener.DocketsWithNulls
+import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
 import org.apache.spark.sql.Dataset
 import org.scalatest.flatspec.AnyFlatSpec
 

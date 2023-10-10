@@ -1,6 +1,6 @@
 package com.amicusearch.etl.process.courtlistener.opinions
 
-import com.amicusearch.etl.datatypes.courtlistener.OpinionsWithNulls
+import com.amicusearch.etl.datatypes.courtlistener.opinions.OpinionsWithNulls
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SQLContext, SparkSession}
 import com.amicusearch.etl.utils.Funcs
 

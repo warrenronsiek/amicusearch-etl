@@ -1,6 +1,6 @@
 package com.amicusearch.etl.process.courtlistener.opinions
 
-import com.amicusearch.etl.datatypes.courtlistener.{OpinionsParsedHTML, OpinionsWithNulls}
+import com.amicusearch.etl.datatypes.courtlistener.opinions.{OpinionsParsedHTML, OpinionsWithNulls}
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import org.apache.spark.sql.{DataFrame, Dataset, SQLContext, SparkSession}
 

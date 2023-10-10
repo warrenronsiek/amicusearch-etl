@@ -1,7 +1,6 @@
 package com.amicusearch.etl.process.courtlistener.opinions
 
-
-import com.amicusearch.etl.datatypes.courtlistener.{OpinionsCleanWhitespace, OpinionsParsedHTML}
+import com.amicusearch.etl.datatypes.courtlistener.opinions.{OpinionsCleanWhitespace, OpinionsParsedHTML}
 import com.amicusearch.etl.utils.NLPParser
 import com.typesafe.scalalogging.LazyLogging
 import edu.stanford.nlp.ling.CoreLabel

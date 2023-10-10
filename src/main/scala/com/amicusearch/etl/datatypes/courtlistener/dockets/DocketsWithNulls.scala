@@ -1,4 +1,4 @@
-package com.amicusearch.etl.datatypes.courtlistener
+package com.amicusearch.etl.datatypes.courtlistener.dockets
 
 case class DocketsWithNulls(id: String,
                             case_name_short: Option[String],

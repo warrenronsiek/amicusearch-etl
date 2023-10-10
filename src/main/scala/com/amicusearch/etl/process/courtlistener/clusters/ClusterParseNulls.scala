@@ -1,6 +1,7 @@
 package com.amicusearch.etl.process.courtlistener.clusters
 
-import com.amicusearch.etl.datatypes.courtlistener.{ClusterWithNulls, OpinionsWithNulls}
+import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
+import com.amicusearch.etl.datatypes.courtlistener.opinions.OpinionsWithNulls
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SQLContext, SparkSession}
 import com.amicusearch.etl.utils.Funcs
 
