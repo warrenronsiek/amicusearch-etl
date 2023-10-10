@@ -4,10 +4,10 @@ import scopt.OParser
 import org.apache.spark.sql.{DataFrame, SQLContext, SparkSession}
 import org.apache.spark.sql.types._
 import better.files._
-//val spark = SparkSession.builder().master("local[*]").appName("ReadCourtsDB").getOrCreate()
-//val df = spark.read.parquet("/Users/warrenronsiek/Projects/amicusearch-etl/courtlistener_chunked/courts/chunk-0.parquet")
-//df.printSchema()
-//df.limit(20).write.json("/Users/warrenronsiek/Projects/amicusearch-etl/src/test/resources/courts-sample/")
+val spark = SparkSession.builder().master("local[*]").appName("ReadCourtsDB").getOrCreate()
+val df = spark.read.parquet("/Users/warrenronsiek/Projects/amicusearch-etl/courtlistener_chunked/dockets/chunk-0.parquet")
+df.printSchema()
+df.limit(20).write.json("/Users/warrenronsiek/Projects/amicusearch-etl/src/test/resources/dockets-sample/")
 
 //import edu.stanford.nlp.ling.CoreLabel
 //import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
@@ -32,4 +32,3 @@ import better.files._
 //val doc = document.tokens().asScala.iterator
 //
 //doc.foreach(println)
-List(Some("a"), None, Some("b")).flatten
