@@ -9,7 +9,6 @@ class ClustersProcessingTest extends AnyFlatSpec with GenericAmicusearchTest {
 
   val processedNulls: Unit => Dataset[ClusterWithNulls] = courtListenerClusters andThen ClusterParseNulls()
 
-
   "ClustersProcessingTest" should "parse nulls" in {
     val df = processedNulls().toDF().coalesce(1)
     assertSnapshot("ProcessNulls", df, "id")
