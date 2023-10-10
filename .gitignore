@@ -3,3 +3,5 @@
 target/**
 project/target/**
 project/project/**
+**.csv.bz2
+courtlistener_chunked/**

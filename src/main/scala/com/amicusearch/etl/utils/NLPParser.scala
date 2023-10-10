@@ -16,11 +16,8 @@ class NLPParser(text: String) {
   val punctuation: Set[String] = Set(",", ".", "!", "?", ";", ":", "(", ")", "[", "]", "{", "}", "-", "_", "+", "=",
     "@", "#", "$", "%", "^", "&", "*", "|", "/", "\\", "<", ">", "~", "`", "'", "\"", "\n", "\t", "\r")
 
-
   def tokenIterator: Iterator[CoreLabel] = document.tokens().asScala.iterator
-
   def lemmaIterator: Iterator[String] = tokenIterator.map(_.lemma()).map(_.toLowerCase).filter(!punctuation.contains(_))
-
   def sentenceIterator: Iterator[String] = document.sentences().asScala.iterator.map(_.text())
 }
 

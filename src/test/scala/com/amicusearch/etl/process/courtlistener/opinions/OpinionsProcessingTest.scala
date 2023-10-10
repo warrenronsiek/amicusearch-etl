@@ -24,7 +24,6 @@ class OpinionsProcessingTest extends AnyFlatSpec with GenericAmicusearchTest {
     assert(RemoveTrivialOpinions.isTrivial(parsed.lemmaIterator))
   }
 
-
   "OpinionsProcessing" should "parse nulls" in {
     val df = processedNulls().toDF().coalesce(1)
     assertSnapshot("ParseNulls", df, "id")

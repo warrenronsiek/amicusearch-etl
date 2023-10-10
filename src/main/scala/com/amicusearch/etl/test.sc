@@ -1,10 +1,13 @@
-//import com.amicusearch.etl.read.ReadCourtsDB.schema
-//import org.apache.spark.sql.functions._
-//import scopt.OParser
-//import org.apache.spark.sql.{DataFrame, SQLContext, SparkSession}
-//import org.apache.spark.sql.types._
-//import better.files._
-////val spark = SparkSession.builder().master("local[*]").appName("ReadCourtsDB").getOrCreate()
+import com.amicusearch.etl.read.ReadCourtsDB.schema
+import org.apache.spark.sql.functions._
+import scopt.OParser
+import org.apache.spark.sql.{DataFrame, SQLContext, SparkSession}
+import org.apache.spark.sql.types._
+import better.files._
+val spark = SparkSession.builder().master("local[*]").appName("ReadCourtsDB").getOrCreate()
+val df = spark.read.parquet("/Users/warrenronsiek/Projects/amicusearch-etl/courtlistener_chunked/opinion_clusters/")
+df.printSchema()
+println("done")
 
 //import edu.stanford.nlp.ling.CoreLabel
 //import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
@@ -29,8 +32,3 @@
 //val doc = document.tokens().asScala.iterator
 //
 //doc.foreach(println)
-
-val punctuation: Set[Char] = Set(',', '.', '!', '?', ';', ':', '(', ')', '[', ']', '{', '}', '-', '_', '+', '=', '@',
-  '#', '$', '%', '^', '&', '*', '|', '/', '\\', '<', '>', '~', '`', '\'', '\"')
-
-punctuation.contains(".")
