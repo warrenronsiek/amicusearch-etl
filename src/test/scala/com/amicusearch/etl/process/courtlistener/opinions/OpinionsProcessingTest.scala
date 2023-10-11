@@ -13,8 +13,6 @@ import edu.stanford.nlp.pipeline.CoreDocument
 import scala.xml.Elem
 
 class OpinionsProcessingTest extends AnyFlatSpec with GenericAmicusearchTest {
-
-
   "Trivial Opinion identification" should "identify short opinions" in {
     val parsed = NLPParser("This is a short opinion.")
     assert(RemoveTrivialOpinions.isTrivial(parsed.lemmaIterator))
