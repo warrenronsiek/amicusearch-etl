@@ -7,7 +7,6 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 class CitationsProcessingSuite extends AnyFlatSpec with GenericAmicusearchTest {
 
-  val processedCitations: Unit => Dataset[ParsedCitation] = courtListenerCitations andThen ParseCitations()
 
   "CitationsProcessingSuite" should "parse citations" in {
     val df = processedCitations().toDF().coalesce(1)

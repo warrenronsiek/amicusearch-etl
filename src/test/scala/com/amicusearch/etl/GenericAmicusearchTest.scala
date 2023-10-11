@@ -1,6 +1,8 @@
 package com.amicusearch.etl
 
+import com.amicusearch.etl.datatypes.courtlistener.citations.ParsedCitation
 import com.amicusearch.etl.datatypes.courtlistener.opinions.{OpinionsCleanWhitespace, OpinionsParsedHTML, OpinionsWithNulls}
+import com.amicusearch.etl.process.courtlistener.citations.ParseCitations
 import com.amicusearch.etl.process.courtlistener.opinions.{ParseHTML, ParseNulls, ParseWhitespace, RemoveTrivialOpinions}
 import com.amicusearch.etl.read.ReadCourtsDB
 import com.amicusearch.etl.read.courtlistener.{ReadCourtListenerCitations, ReadCourtListenerClusters, ReadCourtListenerCourts, ReadCourtListenerDockets, ReadCourtListenerOpinions}
@@ -43,5 +45,5 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
   val opinionParsedHtml: Unit => Dataset[OpinionsParsedHTML] = opinionProcessedNulls andThen ParseHTML() andThen(_.cache())
   val opinionCleanedWhitespace: Unit => Dataset[OpinionsCleanWhitespace] = opinionParsedHtml andThen ParseWhitespace() andThen(_.cache())
   val opinionRemovedTrivial: Unit => Dataset[OpinionsCleanWhitespace] = opinionCleanedWhitespace andThen RemoveTrivialOpinions() andThen(_.cache())
-
+  val processedCitations: Unit => Dataset[ParsedCitation] = courtListenerCitations andThen ParseCitations()
 }

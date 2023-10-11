@@ -4,7 +4,7 @@ import com.amicusearch.etl.GenericAmicusearchTest
 import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
-import com.amicusearch.etl.datatypes.courtlistener.joins.{ClusterOpinion, CourtDocket, DocketCluster}
+import com.amicusearch.etl.datatypes.courtlistener.joins.{ClusterOpinion, CourtDocket, DocketCluster, OpinionCitation}
 import com.amicusearch.etl.datatypes.courtlistener.opinions.OpinionsCleanWhitespace
 import com.amicusearch.etl.process.courtlistener.clusters.ClusterParseNulls
 import com.amicusearch.etl.process.courtlistener.courts.{FilterCourts, ParseCourts}
@@ -23,7 +23,7 @@ class JoinsTest extends AnyFlatSpec with GenericAmicusearchTest{
   val docketsJoinedClusters: Dataset[DocketCluster] = docketsToClusters(clusters()).cache()
   val opinionsToClusters: Dataset[OpinionsCleanWhitespace] => Dataset[ClusterOpinion] = ClustersToOpinions(docketsJoinedClusters)
   val opinionsJoinedClusters: Dataset[ClusterOpinion] = opinionsToClusters(opinionRemovedTrivial())
-
+  val opinionsToCitations: Dataset[ClusterOpinion] => Dataset[OpinionCitation] = OpinionsToCitations(processedCitations())
 
   "CourtToDocketJoin" should "join rows" in {
     val df = courtsJoinedDockets.toDF().coalesce(1)
@@ -40,4 +40,8 @@ class JoinsTest extends AnyFlatSpec with GenericAmicusearchTest{
     assertSnapshot("ClustersToOpinions", df, "opinion_id")
   }
 
+  "OpinionToCitationJoin" should "join rows" in {
+    val df = opinionsToCitations(opinionsJoinedClusters).toDF().coalesce(1)
+    assertSnapshot("OpinionsToCitations", df, "opinion_id")
+  }
 }
