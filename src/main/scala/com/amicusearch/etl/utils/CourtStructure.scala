@@ -183,11 +183,11 @@ object CourtStructure extends LazyLogging{
     lazy val number: Option[Int] = getNumber(courtName)
 
     courtName match {
-      case _ if "[Aa]ppeal".r.findFirstIn(courtName).isDefined && location.isEmpty && number.isDefined =>
+      case _ if "[Aa]ppeals?".r.findFirstIn(courtName).isDefined && location.isEmpty && number.isDefined =>
         Some(s"federal_supreme.federal_appeal_${number.get}")
-      case _ if "[Aa]ppeal".r.findFirstIn(courtName).isDefined && location.isDefined && number.isDefined =>
+      case _ if "[Aa]ppeals?".r.findFirstIn(courtName).isDefined && location.isDefined && number.isDefined =>
         Some(s"federal_supreme.${location.get}_supreme.${location.get}_appeal_${number.get}")
-      case _ if "[Aa]ppeal".r.findFirstIn(courtName).isDefined && location.isDefined && number.isEmpty =>
+      case _ if "[Aa]ppeals?".r.findFirstIn(courtName).isDefined && location.isDefined && number.isEmpty =>
         Some(s"federal_supreme.${location.get}_supreme.${location.get}_appeal")
       case _ if courtName.contains("United States District Court for the District") && location.isDefined =>
         // this is probably not correct - this is a depreciated district type and probably had a different appeals court name

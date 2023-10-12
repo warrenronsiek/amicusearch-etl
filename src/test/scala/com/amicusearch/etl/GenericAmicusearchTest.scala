@@ -1,9 +1,19 @@
 package com.amicusearch.etl
 
 import com.amicusearch.etl.datatypes.courtlistener.citations.ParsedCitation
+import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
+import com.amicusearch.etl.datatypes.courtlistener.courts.Court
+import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
+import com.amicusearch.etl.datatypes.courtlistener.joins.{ClusterOpinion, CourtDocket, DocketCluster, OpinionCitation}
 import com.amicusearch.etl.datatypes.courtlistener.opinions.{OpinionsCleanWhitespace, OpinionsParsedHTML, OpinionsWithNulls}
+import com.amicusearch.etl.datatypes.courtlistener.transforms.OpinionLtree
 import com.amicusearch.etl.process.courtlistener.citations.ParseCitations
+import com.amicusearch.etl.process.courtlistener.clusters.ClusterParseNulls
+import com.amicusearch.etl.process.courtlistener.courts.{FilterCourts, ParseCourts}
+import com.amicusearch.etl.process.courtlistener.dockets.ParseDockets
+import com.amicusearch.etl.process.courtlistener.joins.{ClustersToOpinions, CourtsToDockets, DocketsToClusters, OpinionsToCitations}
 import com.amicusearch.etl.process.courtlistener.opinions.{ParseHTML, ParseNulls, ParseWhitespace, RemoveTrivialOpinions}
+import com.amicusearch.etl.process.courtlistener.transforms.CreateCourtLtree
 import com.amicusearch.etl.read.ReadCourtsDB
 import com.amicusearch.etl.read.courtlistener.{ReadCourtListenerCitations, ReadCourtListenerClusters, ReadCourtListenerCourts, ReadCourtListenerDockets, ReadCourtListenerOpinions}
 import com.warren_r.sparkutils.snapshot.SnapshotTest
@@ -46,4 +56,18 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
   val opinionCleanedWhitespace: Unit => Dataset[OpinionsCleanWhitespace] = opinionParsedHtml andThen ParseWhitespace() andThen(_.cache())
   val opinionRemovedTrivial: Unit => Dataset[OpinionsCleanWhitespace] = opinionCleanedWhitespace andThen RemoveTrivialOpinions() andThen(_.cache())
   val processedCitations: Unit => Dataset[ParsedCitation] = courtListenerCitations andThen ParseCitations()
+
+  val courts: Unit => Dataset[Court] = courtListenerCourts andThen ParseCourts() andThen FilterCourts()
+  val clusters: Unit => Dataset[ClusterWithNulls] = courtListenerClusters andThen ClusterParseNulls()
+  val parseDockets: Unit => Dataset[DocketsWithNulls] = courtListenerDockets andThen ParseDockets()
+  val courtsToDockets: Dataset[DocketsWithNulls] => Dataset[CourtDocket] = CourtsToDockets(courts())
+  val courtsJoinedDockets: Dataset[CourtDocket] = courtsToDockets(parseDockets()).cache()
+  val docketsToClusters: Dataset[ClusterWithNulls] => Dataset[DocketCluster] = DocketsToClusters(courtsJoinedDockets)
+  val docketsJoinedClusters: Dataset[DocketCluster] = docketsToClusters(clusters()).cache()
+  val opinionsToClusters: Dataset[OpinionsCleanWhitespace] => Dataset[ClusterOpinion] = ClustersToOpinions(docketsJoinedClusters)
+  val opinionsJoinedClusters: Dataset[ClusterOpinion] = opinionsToClusters(opinionRemovedTrivial()).cache()
+  val opinionsToCitations: Dataset[ClusterOpinion] => Dataset[OpinionCitation] = OpinionsToCitations(processedCitations())
+
+  val createCourtLtree: Dataset[ClusterOpinion] => Dataset[OpinionLtree] = opinionsToCitations andThen CreateCourtLtree()
+  val courtLtree: Dataset[OpinionLtree] = createCourtLtree(opinionsJoinedClusters).cache()
 }

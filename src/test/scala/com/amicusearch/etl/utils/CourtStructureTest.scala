@@ -142,6 +142,7 @@ class CourtStructureTest extends AnyFlatSpec with Matchers with TableDrivenPrope
     ("United States Circuit Court for the Northern District of Florida", "federal_supreme.federal_pre1981_circuit_5"),
     ("U.S. Circuit Court for New York", "federal_supreme.federal_pre1981_circuit_2"),
     ("Superior Court, S. D. Florida", "federal_supreme.federal_appeal_11.federal_district_fl_sd"),
+    ("Court of Appeals of Arizona", "federal_supreme.az_supreme.az_appeal"),
     ("District Court, E.D. South Carolina", "federal_supreme.federal_appeal_4.federal_district_sc_ed"))
   it should "parse court trees" in {
     forAll(courtTrees) { (court, ltree) =>
