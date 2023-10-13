@@ -21,13 +21,14 @@ object DocketsToClusters {
           case_name = d.case_name,
           case_name_full = d.case_name_full,
           slug = d.slug,
+          region_partition = d.region_partition,
           date_filed = c.date_filed,
           scdb_id = c.scdb_id,
           headnotes = c.headnotes,
           summary = c.summary,
           citation_count = c.citation_count,
           precedential_status = c.precedential_status,
-          cluster_id = c.id
+          cluster_id = c.id,
         )
       }
     }

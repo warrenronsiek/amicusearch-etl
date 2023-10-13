@@ -3,6 +3,7 @@ package com.amicusearch.etl.process.courtlistener.joins
 import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.joins.CourtDocket
+import com.amicusearch.etl.utils.USRegion
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 object CourtsToDockets {
@@ -22,7 +23,17 @@ object CourtsToDockets {
           case_name_short = d.case_name_short,
           case_name = d.case_name,
           case_name_full = d.case_name_full,
-          slug = d.slug
+          slug = d.slug,
+          region_partition = {
+            if (c.jurisdiction.startsWith("F")) {
+              Some("FED")
+            } else if ((c.full_name orElse c.short_name).isDefined) {
+              USRegion.fromString((c.full_name orElse c.short_name).get) match {
+                case Some(region) => Some(USRegion.abbreviation(region))
+                case None => None
+              }
+            } else None
+          },
         )
       }
     }

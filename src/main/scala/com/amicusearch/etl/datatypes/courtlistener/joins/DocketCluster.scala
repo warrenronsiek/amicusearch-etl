@@ -11,6 +11,7 @@ case class DocketCluster(court_id: String,
                          case_name: String,
                          case_name_full: Option[String],
                          slug: String,
+                         region_partition: Option[String],
 
                          cluster_id: String,
                          date_filed: String,

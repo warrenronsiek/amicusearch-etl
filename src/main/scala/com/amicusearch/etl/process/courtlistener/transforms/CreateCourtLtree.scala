@@ -20,6 +20,7 @@ object CreateCourtLtree {
       case_name = o.case_name,
       case_name_full = o.case_name_full,
       slug = o.slug,
+      region_partition = o.region_partition,
       cluster_id = o.cluster_id,
       date_filed = o.date_filed,
       scdb_id = o.scdb_id,

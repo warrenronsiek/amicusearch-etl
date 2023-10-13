@@ -10,4 +10,5 @@ case class CourtDocket(court_id: String,
                        case_name_short: Option[String],
                        case_name: String,
                        case_name_full: Option[String],
-                       slug: String)
+                       slug: String,
+                       region_partition: Option[String])

@@ -22,6 +22,7 @@ object ClustersToOpinions {
           case_name = c.case_name,
           case_name_full = c.case_name_full,
           slug = c.slug,
+          region_partition = c.region_partition,
           cluster_id = c.cluster_id,
           date_filed = c.date_filed,
           scdb_id = c.scdb_id,
@@ -30,7 +31,7 @@ object ClustersToOpinions {
           citation_count = c.citation_count,
           precedential_status = c.precedential_status,
           opinion_id = o.id,
-          plain_text = o.plain_text
+          plain_text = o.plain_text,
         )
       }
     }

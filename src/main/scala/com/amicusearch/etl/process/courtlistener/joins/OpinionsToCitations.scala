@@ -22,6 +22,7 @@ object OpinionsToCitations {
         case_name = o.case_name,
         case_name_full = o.case_name_full,
         slug = o.slug,
+        region_partition = o.region_partition,
         date_filed = o.date_filed,
         scdb_id = o.scdb_id,
         headnotes = o.headnotes,
@@ -34,7 +35,7 @@ object OpinionsToCitations {
         reporter = c.reporter,
         page = c.page,
         cite_type = c.cite_type,
-        cluster_id = o.cluster_id
+        cluster_id = o.cluster_id,
       )
     }
   }

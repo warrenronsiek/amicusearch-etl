@@ -73,8 +73,9 @@ object USRegion extends Enumeration {
   private val abbreviationToEnum = enumToAbbreviation.map(_.swap)
 
   def fromString(str: String): Option[USRegion.Value] =
-    values.find(_.toString == str.toLowerCase) orElse abbreviationToEnum.get(str.toUpperCase)
+    values.find(v => str.toLowerCase.replace(" ", "_").contains(v.toString)) orElse
+      abbreviationToEnum.get("[\\s\\.]".r.replaceAllIn(str.toUpperCase, ""))
 
-  def toAbbreviation(region: USRegion.Value): String = enumToAbbreviation(region)
+  def abbreviation(region: USRegion.Value): String = enumToAbbreviation(region)
   def toStringList: List[String] = values.toList.map(_.toString)
 }
