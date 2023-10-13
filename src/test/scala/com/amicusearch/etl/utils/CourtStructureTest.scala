@@ -70,7 +70,7 @@ class CourtStructureTest extends AnyFlatSpec with Matchers with TableDrivenPrope
     ("Circuit Court of the 20th Judicial Circuit of Florida, Lee County", Some("fl")),
     ("United States Judicial Panel on Multidistrict Litigation", None),
     ("United States Court of International Trade", None),
-    ("District Court, District of Columbia", None),
+    ("District Court, District of Columbia", Some("dc")),
     ("District Court, Virgin Islands", Some("vi")),
     ("United States Customs Court", None),
     ("Court of Appeals for the D.C. Circuit", None)

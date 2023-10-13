@@ -8,7 +8,7 @@ object USRegion extends Enumeration {
   utah, vermont, west_virginia,
   // important that west_virginia comes before virginia in the list. otherwise, virginia will be matched first
   virginia, washington, wisconsin, wyoming, the_northern_mariana_islands, district_of_columbia, district_columbia,
-  northern_mariana_islands, guam, virgin_islands, puerto_rico, federal = Value
+  northern_mariana_islands, guam, virgin_islands, puerto_rico = Value
 
   private val enumToAbbreviation = Map(
     alabama -> "AL",
@@ -66,7 +66,6 @@ object USRegion extends Enumeration {
     guam -> "GU",
     virgin_islands -> "VI",
     puerto_rico -> "PR",
-    federal -> "FED",
     district_of_columbia -> "DC",
     district_columbia -> "DC",
   )
