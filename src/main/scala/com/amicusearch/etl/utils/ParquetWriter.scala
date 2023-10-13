@@ -7,7 +7,7 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{LongType, StringType}
 import org.apache.spark.sql.{Dataset, SQLContext, SaveMode, SparkSession}
 
-class ParquetWriter(writePath: String, partitionCols: List[String], saveMode: SaveMode = SaveMode.Overwrite)
+class ParquetWriter(writePath: String, partitionCols: List[String], saveMode: SaveMode = SaveMode.Append)
                      (implicit spark: SparkSession, sqlContext: SQLContext) extends LazyLogging {
   val write: Dataset[_] => Unit = ds => {
 

@@ -32,6 +32,12 @@ object ReadCourtListenerOpinions {
   ))
 
   def apply(path: String, env: AppParams.Environment.Value)(implicit spark: SparkSession): Unit => DataFrame = {
-    GenericCourtlisterReader(path, env, schema)
+    _ =>
+      env match {
+        case AppParams.Environment.local => spark.read.schema(schema).json(path)
+        case AppParams.Environment.cci => spark.read.schema(schema).json(path)
+        case AppParams.Environment.dev => spark.readStream.schema(schema).option("header", "true").parquet(path)
+        case AppParams.Environment.prod => spark.readStream.schema(schema).option("header", "true").parquet(path)
+      }
   }
 }

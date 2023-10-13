@@ -13,7 +13,7 @@ import com.amicusearch.etl.process.courtlistener.dockets.ParseDockets
 import com.amicusearch.etl.process.courtlistener.joins.{ClustersToOpinions, CourtsToDockets, DocketsToClusters, OpinionsToCitations}
 import com.amicusearch.etl.process.courtlistener.opinions.{ParseHTML, ParseNulls, ParseWhitespace, RemoveTrivialOpinions}
 import com.amicusearch.etl.read.courtlistener._
-import com.amicusearch.etl.utils.USRegion
+import com.amicusearch.etl.utils.{ParquetWriter, USRegion}
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
@@ -31,7 +31,7 @@ object RunCourtlistener {
     val opinions: Dataset[OpinionsCleanWhitespace] = processOpinions(config.getString("courtlistener.opinions"), appParams.env)()
     val citations: Dataset[ParsedCitation] = processCitations(config.getString("courtlistener.citations"), appParams.env)()
     val opinionCitations: Dataset[OpinionCitation] = runJoins(courts, dockets, clusters, opinions, citations)
-    opinionCitations
+    ParquetWriter(config.getString("courtlistener.results.local"), List())
   }
 
   val processCourts: (String, AppParams.Environment.Value, List[USRegion.Value], Boolean) => Unit => Dataset[Court] =
