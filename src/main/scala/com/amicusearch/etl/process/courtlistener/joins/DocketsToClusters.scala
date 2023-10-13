@@ -5,10 +5,10 @@ import com.amicusearch.etl.datatypes.courtlistener.joins.{CourtDocket, DocketClu
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 object DocketsToClusters {
-  def apply(courtDockets: Dataset[CourtDocket])(implicit spark: SparkSession, SQLContext: SQLContext): Dataset[ClusterWithNulls] => Dataset[DocketCluster] =
-    cluster => {
+  def apply(cluster: Dataset[ClusterWithNulls])(implicit spark: SparkSession, SQLContext: SQLContext): Dataset[CourtDocket] => Dataset[DocketCluster] =
+    courtDocket => {
       import SQLContext.implicits._
-      cluster.joinWith(courtDockets, cluster("docket_id") === courtDockets("docket_id"), "inner").map {
+      cluster.joinWith(courtDocket, cluster("docket_id") === courtDocket("docket_id"), "inner").map {
         case (c: ClusterWithNulls, d: CourtDocket) => DocketCluster(
           court_id = d.court_id,
           court_citation_string = d.court_citation_string,

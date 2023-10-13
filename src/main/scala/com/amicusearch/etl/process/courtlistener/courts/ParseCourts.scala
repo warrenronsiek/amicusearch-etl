@@ -17,5 +17,4 @@ object ParseCourts {
       jurisdiction = r.getAs[String]("jurisdiction"),
     ))
   }
-
 }

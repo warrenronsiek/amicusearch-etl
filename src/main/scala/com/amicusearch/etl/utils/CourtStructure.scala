@@ -96,68 +96,11 @@ object CourtStructure extends LazyLogging{
     "district_of_columbia" -> "dc",
     "district_columbia" -> "dc",
   )
-  private val locations: List[String] = List(
-    "alabama",
-    "alaska",
-    "arizona",
-    "arkansas",
-    "california",
-    "colorado",
-    "connecticut",
-    "delaware",
-    "florida",
-    "georgia",
-    "hawaii",
-    "idaho",
-    "illinois",
-    "indiana",
-    "iowa",
-    "kansas",
-    "kentucky",
-    "louisiana",
-    "maine",
-    "maryland",
-    "massachusetts",
-    "michigan",
-    "minnesota",
-    "mississippi",
-    "missouri",
-    "montana",
-    "nebraska",
-    "nevada",
-    "new_hampshire",
-    "new_jersey",
-    "new_mexico",
-    "new_york",
-    "north_carolina",
-    "north_dakota",
-    "ohio",
-    "oklahoma",
-    "oregon",
-    "pennsylvania",
-    "rhode_island",
-    "south_carolina",
-    "south_dakota",
-    "tennessee",
-    "texas",
-    "utah",
-    "vermont",
-    "west_virginia",
-    // important that this comes before virginia in the list. otherwise, virginia will be matched first
-    "virginia",
-    "washington",
-    "wisconsin",
-    "wyoming",
-    "the_northern_mariana_islands",
-    "northern_mariana_islands",
-    "guam",
-    "virgin_islands",
-    "puerto_rico"
-  )
+
   private val militaryCourts = List("Marine", "Navy", "Army", "Air", "Coast")
 
-  def getState(courtName: String): Option[String] = {
-    val state = locations.find(courtName.toLowerCase.replace(" ", "_").contains)
+  def getRegion(courtName: String): Option[String] = {
+    val state = USRegion.toStringList.find(courtName.toLowerCase.replace(" ", "_").contains)
     state match {
       case Some(state) => Some(stateAbbreviations(state))
       case None => None
@@ -179,7 +122,7 @@ object CourtStructure extends LazyLogging{
   }
 
   def getCourtLtree(courtName:String): Option[String] = {
-    lazy val location: Option[String] = getState(courtName)
+    lazy val location: Option[String] = getRegion(courtName)
     lazy val number: Option[Int] = getNumber(courtName)
 
     courtName match {

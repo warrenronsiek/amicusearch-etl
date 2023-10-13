@@ -6,10 +6,10 @@ import com.amicusearch.etl.datatypes.courtlistener.opinions.OpinionsCleanWhitesp
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 object ClustersToOpinions {
-  def apply(clusters: Dataset[DocketCluster])(implicit spark: SparkSession, SQLContext: SQLContext): Dataset[OpinionsCleanWhitespace] => Dataset[ClusterOpinion] =
-    opinions => {
+  def apply(opinions: Dataset[OpinionsCleanWhitespace])(implicit spark: SparkSession, SQLContext: SQLContext): Dataset[DocketCluster] => Dataset[ClusterOpinion] =
+    docketCluster => {
       import SQLContext.implicits._
-      opinions.joinWith(clusters, opinions("cluster_id") === clusters("cluster_id"), "inner").map {
+      opinions.joinWith(docketCluster, opinions("cluster_id") === docketCluster("cluster_id"), "inner").map {
         case (o:OpinionsCleanWhitespace, c:DocketCluster) => ClusterOpinion(
           court_id = c.court_id,
           court_citation_string = c.court_citation_string,

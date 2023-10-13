@@ -78,7 +78,7 @@ class CourtStructureTest extends AnyFlatSpec with Matchers with TableDrivenPrope
 
   it should "parse court states" in {
     forAll(courtStates) { (court, state) =>
-      CourtStructure.getState(court) should be(state)
+      CourtStructure.getRegion(court) should be(state)
     }
   }
 

@@ -1,4 +1,4 @@
-import com.amicusearch.etl.{AppParams, SparkConf}
+import com.amicusearch.etl.{AppParams, RunCourtlistener, SparkConf}
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.SparkContext
@@ -18,9 +18,7 @@ class Main extends LazyLogging {
     })
 
     params.mode match {
-      case AppParams.Mode.partitionCasetext => ()
-      case AppParams.Mode.caseProcessor => ()
-      case AppParams.Mode.courtListener => ()
+      case AppParams.Mode.courtListener => RunCourtlistener(params, conf)
       case _ => logger.error("Invalid mode")
     }
   }

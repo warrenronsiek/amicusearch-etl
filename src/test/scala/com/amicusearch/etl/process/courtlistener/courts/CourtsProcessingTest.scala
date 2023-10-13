@@ -11,15 +11,15 @@ class CourtsProcessingTest extends AnyFlatSpec with GenericAmicusearchTest {
   val filteredCourts: Unit => Dataset[Court] = parsedCourts andThen FilterCourts()
 
   "CourtsFilter" should "identify courts with state names in their names" in {
-    assert(FilterCourts.nameContainsState(List("Supreme Court of North Carolina"), List("North Carolina")))
+    assert(FilterCourts.nameContainsRegion(List("Supreme Court of North Carolina"), List("North Carolina")))
   }
 
   it should "remove courts without state names in their names" in {
-    assert(!FilterCourts.nameContainsState(List("Supreme Court of North Carolina"), List("South Carolina")))
+    assert(!FilterCourts.nameContainsRegion(List("Supreme Court of North Carolina"), List("South Carolina")))
   }
 
   it should "handle variable length lists" in {
-    assert(FilterCourts.nameContainsState(List("Supreme Court of North Carolina", "Sup.Ct. of SC"), List("North Carolina", "New York")))
+    assert(FilterCourts.nameContainsRegion(List("Supreme Court of North Carolina", "Sup.Ct. of SC"), List("North Carolina", "New York")))
   }
 
   "CourtsProcessingTest" should "parse nulls" in {

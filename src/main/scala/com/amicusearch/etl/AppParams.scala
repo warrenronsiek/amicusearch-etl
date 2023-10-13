@@ -1,8 +1,11 @@
 package com.amicusearch.etl
+import com.amicusearch.etl.utils.USRegion
 import scopt.OParser
 
 case class AppParams(mode: AppParams.Mode.Value = AppParams.Mode.partitionCasetext,
-                     env: AppParams.Environment.Value = AppParams.Environment.dev)
+                     env: AppParams.Environment.Value = AppParams.Environment.dev,
+                     states: List[USRegion.Value] = List.empty[USRegion.Value],
+                     includeFederal: Boolean = false)
 
 object AppParams {
   object Mode extends Enumeration {
@@ -33,7 +36,13 @@ object AppParams {
           case "local" => AppParams.Environment.local
           case "cci" => AppParams.Environment.cci
         }))
-        .text("the environment you want to run in")
+        .text("the environment you want to run in"),
+      opt[String]('s', "states")
+        .action((x, c) => c.copy(states = x.split(",").toList.map(USRegion.fromString(_).get)))
+        .text("the states you want to run in"),
+      opt[Boolean]('f', "includeFederal")
+        .action((x, c) => c.copy(includeFederal = x))
+        .text("whether to include federal courts")
     )
   }
 
