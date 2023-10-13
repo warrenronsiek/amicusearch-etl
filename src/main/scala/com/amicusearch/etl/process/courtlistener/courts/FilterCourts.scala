@@ -7,7 +7,7 @@ import org.apache.spark.sql.{Dataset, SparkSession}
 object FilterCourts {
 
   def nameContainsRegion(names: List[String], regions: List[USRegion.Value]): Boolean = {
-    regions.map(region => names.map(name => name.contains(region.toString)).reduce(_ || _)).reduce(_ || _)
+    regions.map(region => names.map(name => name.toLowerCase.replace(" ", "_").contains(region.toString)).reduce(_ || _)).reduce(_ || _)
   }
 
   def apply(states: List[USRegion.Value] = List[USRegion.Value](), includeFederal: Boolean = false)(implicit spark: SparkSession): Dataset[Court] => Dataset[Court] = ds => {

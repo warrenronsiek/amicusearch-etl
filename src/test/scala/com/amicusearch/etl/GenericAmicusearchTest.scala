@@ -64,8 +64,8 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
   val courtsJoinedDockets: Dataset[CourtDocket] = courtsToDockets(parseDockets()).cache()
   val docketsToCluster: Dataset[CourtDocket] => Dataset[DocketCluster] = DocketsToClusters(clusters())
   val docketsJoinedClusters: Dataset[DocketCluster] = docketsToCluster(courtsJoinedDockets).cache()
-  val opinionsToClusters: Dataset[OpinionsCleanWhitespace] => Dataset[ClusterOpinion] = ClustersToOpinions(docketsJoinedClusters)
-  val opinionsJoinedClusters: Dataset[ClusterOpinion] = opinionsToClusters(opinionRemovedTrivial()).cache()
+  val opinionsToClusters: Dataset[DocketCluster] => Dataset[ClusterOpinion] = ClustersToOpinions(opinionRemovedTrivial())
+  val opinionsJoinedClusters: Dataset[ClusterOpinion] = opinionsToClusters(docketsJoinedClusters).cache()
   val opinionsToCitations: Dataset[ClusterOpinion] => Dataset[OpinionCitation] = OpinionsToCitations(processedCitations())
 
   val createCourtLtree: Dataset[ClusterOpinion] => Dataset[OpinionLtree] = opinionsToCitations andThen CreateCourtLtree()
