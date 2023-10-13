@@ -6,17 +6,19 @@ import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.joins.OpinionCitation
 import com.amicusearch.etl.datatypes.courtlistener.opinions.OpinionsCleanWhitespace
+import com.amicusearch.etl.datatypes.courtlistener.transforms.OpinionDatePartition
 import com.amicusearch.etl.process.courtlistener.citations.ParseCitations
 import com.amicusearch.etl.process.courtlistener.clusters.ClusterParseNulls
 import com.amicusearch.etl.process.courtlistener.courts.{FilterCourts, ParseCourts}
 import com.amicusearch.etl.process.courtlistener.dockets.ParseDockets
 import com.amicusearch.etl.process.courtlistener.joins.{ClustersToOpinions, CourtsToDockets, DocketsToClusters, OpinionsToCitations}
 import com.amicusearch.etl.process.courtlistener.opinions.{ParseHTML, ParseNulls, ParseWhitespace, RemoveTrivialOpinions}
+import com.amicusearch.etl.process.courtlistener.transforms.{CreateCourtLtree, CreateDatePartition}
 import com.amicusearch.etl.read.courtlistener._
 import com.amicusearch.etl.utils.{ParquetWriter, USRegion}
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
+import org.apache.spark.sql.{Dataset, SQLContext, SaveMode, SparkSession}
 
 object RunCourtlistener {
 
@@ -24,14 +26,18 @@ object RunCourtlistener {
   implicit val sc: SparkContext = spark.sparkContext
   implicit val sql: SQLContext = spark.sqlContext
 
-  def apply(appParams: AppParams, config: Config) = {
+  def apply(appParams: AppParams, config: Config): Unit = {
+    val writer: ParquetWriter = ParquetWriter(config.getString("courtlistener.results.local"),  List("date_partition", "region_partition"), SaveMode.Append)
+
     val courts: Dataset[Court] = processCourts(config.getString("courtlistener.courts"), appParams.env, appParams.states, appParams.includeFederal)()
     val dockets: Dataset[DocketsWithNulls] = processDockets(config.getString("courtlistener.dockets"), appParams.env)()
     val clusters: Dataset[ClusterWithNulls] = processClusters(config.getString("courtlistener.clusters"), appParams.env)()
     val opinions: Dataset[OpinionsCleanWhitespace] = processOpinions(config.getString("courtlistener.opinions"), appParams.env)()
     val citations: Dataset[ParsedCitation] = processCitations(config.getString("courtlistener.citations"), appParams.env)()
-    val opinionCitations: Dataset[OpinionCitation] = runJoins(courts, dockets, clusters, opinions, citations)
-    ParquetWriter(config.getString("courtlistener.results.local"), List())
+
+    (runJoins(courts, dockets, clusters, opinions, citations) andThen
+      runTransforms andThen
+      writer.write).apply()
   }
 
   val processCourts: (String, AppParams.Environment.Value, List[USRegion.Value], Boolean) => Unit => Dataset[Court] =
@@ -73,15 +79,21 @@ object RunCourtlistener {
       Dataset[DocketsWithNulls],
       Dataset[ClusterWithNulls],
       Dataset[OpinionsCleanWhitespace],
-      Dataset[ParsedCitation]) => Dataset[OpinionCitation] =
+      Dataset[ParsedCitation]) => Unit => Dataset[OpinionCitation] =
     (courts: Dataset[Court],
      dockets: Dataset[DocketsWithNulls],
      clusters: Dataset[ClusterWithNulls],
      opinions: Dataset[OpinionsCleanWhitespace],
-     citations: Dataset[ParsedCitation]) => {
+     citations: Dataset[ParsedCitation]) => _ => {
       (CourtsToDockets(courts) andThen
         DocketsToClusters(clusters) andThen
         ClustersToOpinions(opinions) andThen
         OpinionsToCitations(citations))(dockets)
+    }
+
+  val runTransforms: Dataset[OpinionCitation] => Dataset[OpinionDatePartition] =
+    (opinionCitations: Dataset[OpinionCitation]) => {
+      (CreateCourtLtree() andThen
+        CreateDatePartition())(opinionCitations)
     }
 }

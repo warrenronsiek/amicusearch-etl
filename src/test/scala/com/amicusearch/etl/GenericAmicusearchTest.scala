@@ -6,14 +6,14 @@ import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.joins.{ClusterOpinion, CourtDocket, DocketCluster, OpinionCitation}
 import com.amicusearch.etl.datatypes.courtlistener.opinions.{OpinionsCleanWhitespace, OpinionsParsedHTML, OpinionsWithNulls}
-import com.amicusearch.etl.datatypes.courtlistener.transforms.OpinionLtree
+import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionDatePartition, OpinionLtree}
 import com.amicusearch.etl.process.courtlistener.citations.ParseCitations
 import com.amicusearch.etl.process.courtlistener.clusters.ClusterParseNulls
 import com.amicusearch.etl.process.courtlistener.courts.{FilterCourts, ParseCourts}
 import com.amicusearch.etl.process.courtlistener.dockets.ParseDockets
 import com.amicusearch.etl.process.courtlistener.joins.{ClustersToOpinions, CourtsToDockets, DocketsToClusters, OpinionsToCitations}
 import com.amicusearch.etl.process.courtlistener.opinions.{ParseHTML, ParseNulls, ParseWhitespace, RemoveTrivialOpinions}
-import com.amicusearch.etl.process.courtlistener.transforms.CreateCourtLtree
+import com.amicusearch.etl.process.courtlistener.transforms.{CreateCourtLtree, CreateDatePartition}
 import com.amicusearch.etl.read.ReadCourtsDB
 import com.amicusearch.etl.read.courtlistener.{ReadCourtListenerCitations, ReadCourtListenerClusters, ReadCourtListenerCourts, ReadCourtListenerDockets, ReadCourtListenerOpinions}
 import com.warren_r.sparkutils.snapshot.SnapshotTest
@@ -70,4 +70,5 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
 
   val createCourtLtree: Dataset[ClusterOpinion] => Dataset[OpinionLtree] = opinionsToCitations andThen CreateCourtLtree()
   val courtLtree: Dataset[OpinionLtree] = createCourtLtree(opinionsJoinedClusters).cache()
+  val datePartitions: Dataset[OpinionDatePartition] = CreateDatePartition().apply(courtLtree).cache()
 }

@@ -27,6 +27,7 @@ object AppParams {
         .action((x, c) => c.copy(mode = x match {
           case "partitionCasetext" => AppParams.Mode.partitionCasetext
           case "caseProcessor" => AppParams.Mode.caseProcessor
+          case "courtlistener" => AppParams.Mode.courtListener
         }))
         .text("the sub-type of etl you want to run"),
       opt[String]('e', "env")

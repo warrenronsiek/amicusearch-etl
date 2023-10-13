@@ -10,8 +10,8 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "com.warren-r" % "sparkutils_2.13" % "0.1.4",
       "com.amazonaws" % "aws-java-sdk" % "1.12.560",
-      "org.apache.spark" %% "spark-core" % "3.5.0",
-      "org.apache.spark" %% "spark-sql" % "3.5.0",
+      "org.apache.spark" %% "spark-core" % "3.5.0" % "provided",
+      "org.apache.spark" %% "spark-sql" % "3.5.0" % "provided",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
       "com.typesafe" % "config" % "1.4.2",
       "com.github.scopt" %% "scopt" % "4.1.0",
@@ -20,8 +20,8 @@ lazy val root = (project in file("."))
       "edu.stanford.nlp" % "stanford-corenlp" % "4.5.4",
       "edu.stanford.nlp" % "stanford-corenlp" % "4.5.4" classifier "models",
       "org.scalatest" %% "scalatest" % "3.2.17" % Test,
-      "ch.qos.logback" % "logback-classic" % "1.4.7" % Test,
-      "ch.qos.logback" % "logback-core" % "1.4.7" % Test,
+      "ch.qos.logback" % "logback-classic" % "1.3.11" % Test,
+      "ch.qos.logback" % "logback-core" % "1.3.11" % Test,
     )
   )
 
