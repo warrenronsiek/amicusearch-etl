@@ -46,7 +46,9 @@ jobs:
       - run: *install_aws_cli
       - run:
           name: sbt assembly
-          command: sbt assembly
+          command: |
+            export SBT_OPTS="-Xms2G -Xmx4G"
+            sbt assembly
       - run:
           name: copy jars to s3
           command: |

@@ -9,7 +9,6 @@ nohup spark-submit \
   --master k8s://https://127.0.0.1:6443 \
   --deploy-mode cluster \
   --name amicusearch-etl \
-  --jars ~/projects/amicusearch-etl/AmicusearchETL.jar,/opt/spark/jars/bcprov-jdk15on-1.70.jar,/opt/spark/jars/bcpkix-jdk15on-1.70.jar,/opt/spark/jars/hadoop-aws-3.3.4.jar,/opt/spark/jars/aws-java-sdk-bundle-1.11.901.jar \
   --class com.amicusearch.etl.Main \
   --conf spark.driver.memory=10g \
   --conf spark.driver.cores=3 \
@@ -21,5 +20,5 @@ nohup spark-submit \
   --conf spark.kubernetes.file.upload.path=s3a://amicusearch/etl-k8s/ \
   --conf spark.hadoop.fs.s3a.access.key=$AWS_ACCESS_KEY_ID \
   --conf spark.hadoop.fs.s3a.secret.key=$AWS_SECRET_ACCESS_KEY \
-  local:///opt/spark/work-dir/AmicusearchETL.jar \
+  s3a://amicusearch/etl/AmicusearchETL.jar \
   --mode courtlistener --env local --states FL,NY --includeFederal true > spark.log 2>&1 &
