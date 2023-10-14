@@ -1,4 +1,5 @@
-import com.amicusearch.etl.{AppParams, RunCourtlistener, SparkConf}
+package com.amicusearch.etl
+
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.SparkContext
