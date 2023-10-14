@@ -2,14 +2,15 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.10"
 
-dependencyOverrides += "org.scala-lang.modules" %% "scala-xml" % "2.1.0"
+dependencyOverrides += "org.scala-lang.modules" %% "scala-xml" % "2.1.0" // spark requires 2.1.0, which is incompatible with sclatest requirement of 1.2.0
 
 lazy val root = (project in file("."))
   .settings(
     name := "AmicusearchETL",
     libraryDependencies ++= Seq(
       "com.warren-r" % "sparkutils_2.13" % "0.1.4",
-      "com.amazonaws" % "aws-java-sdk" % "1.12.560",
+      "org.apache.hadoop" % "hadoop-aws" % "3.3.4",
+      "com.amazonaws" % "aws-java-sdk" % "1.11.901", // do not update, is a dep with hadoop-aws
       "org.apache.spark" %% "spark-core" % "3.5.0" % "provided",
       "org.apache.spark" %% "spark-sql" % "3.5.0" % "provided",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
@@ -22,6 +23,8 @@ lazy val root = (project in file("."))
       "org.scalatest" %% "scalatest" % "3.2.17" % Test,
       "ch.qos.logback" % "logback-classic" % "1.3.11" % Test,
       "ch.qos.logback" % "logback-core" % "1.3.11" % Test,
+      "org.bouncycastle" % "bcprov-jdk15on" % "1.70", // is required to play nice with rancher kubernetes
+      "org.bouncycastle" % "bcpkix-jdk15on" % "1.70", // is required to play nice with rancher kubernetes
     )
   )
 
