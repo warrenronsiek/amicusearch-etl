@@ -4,7 +4,8 @@ import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{SQLContext, SparkSession}
-class Main extends LazyLogging {
+
+object Main extends LazyLogging {
   def run(params: AppParams): Unit = {
     implicit val spark: SparkSession = SparkSession.builder
       .config(SparkConf.conf).getOrCreate()
