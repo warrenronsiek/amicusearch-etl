@@ -8,7 +8,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "AmicusearchETL",
     libraryDependencies ++= Seq(
-//      "com.warren-r" % "sparkutils_2.13" % "0.1.4"  % Test,
+      "com.warren-r" % "sparkutils_2.12" % "0.1.5"  % Test,
       "org.apache.hadoop" % "hadoop-aws" % "3.3.4",
       "com.amazonaws" % "aws-java-sdk" % "1.11.901", // do not update, is a dep with hadoop-aws
       "org.apache.spark" %% "spark-core" % "3.5.0" % Provided,
