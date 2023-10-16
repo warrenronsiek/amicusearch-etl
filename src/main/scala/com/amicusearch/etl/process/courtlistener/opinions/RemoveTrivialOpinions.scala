@@ -9,7 +9,6 @@ import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 import java.util.Properties
 import scala.annotation.tailrec
-import scala.jdk.CollectionConverters._
 
 object RemoveTrivialOpinions extends LazyLogging{
 

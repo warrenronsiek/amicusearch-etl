@@ -4,7 +4,7 @@ import edu.stanford.nlp.ling.CoreLabel
 import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
 
 import java.util.Properties
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 
 class NLPParser(text: String) {
   val props: Properties = new Properties();

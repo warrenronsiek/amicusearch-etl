@@ -6,7 +6,6 @@ import com.amicusearch.etl.process.courtlistener.opinions.RemoveTrivialOpinions
 import com.amicusearch.etl.utils.NLPParser
 import org.apache.spark.sql.Dataset
 
-import scala.jdk.CollectionConverters._
 import org.scalatest.flatspec.AnyFlatSpec
 import edu.stanford.nlp.pipeline.CoreDocument
 
