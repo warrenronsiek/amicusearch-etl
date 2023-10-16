@@ -5,6 +5,8 @@ wget https://repo1.maven.org/maven2/org/bouncycastle/bcpkix-jdk15on/1.70/bcpkix-
 wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar && mv hadoop-aws-3.3.4.jar /opt/spark/jars/
 wget https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.901/aws-java-sdk-bundle-1.11.901.jar && mv aws-java-sdk-bundle-1.11.901.jar /opt/spark/jars/
 
+$HOST_MOUNT=/home/warren/storage-mount/amicusearch-v2-data/
+
 nohup spark-submit \
   --master k8s://https://127.0.0.1:6443 \
   --deploy-mode cluster \
@@ -15,6 +17,10 @@ nohup spark-submit \
   --conf spark.executor.instances=3 \
   --conf spark.executor.cores=3 \
   --conf spark.executor.memory=10g \
+  --conf spark.kubernetes.driver.volumes.hostPath.myvolume.mount.path=/tmp/fsmount/ \
+  --conf spark.kubernetes.driver.volumes.hostPath.myvolume.options.path=$HOST_MOUNT \
+  --conf spark.kubernetes.executor.volumes.hostPath.myvolume.mount.path=/tmp/fsmount/ \
+  --conf spark.kubernetes.executor.volumes.hostPath.myvolume.options.path=$HOST_MOUNT \
   --conf spark.kubernetes.container.image=warrenronsiek/spark-aws-k8:1.0.0 \
   --conf spark.kubernetes.authenticate.serviceAccountName=default \
   --conf spark.kubernetes.file.upload.path=s3a://amicusearch/etl-k8s/ \
