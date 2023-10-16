@@ -52,7 +52,7 @@ jobs:
       - run:
           name: copy jars to s3
           command: |
-            aws s3 cp target/scala-2.13/AmicusearchETL.jar s3://amicusearch/etl/AmicusearchETL.jar
+            aws s3 cp target/scala-2.12/AmicusearchETL.jar s3://amicusearch/etl/AmicusearchETL.jar
       - save_cache:
           paths:
             - ~/.m2
