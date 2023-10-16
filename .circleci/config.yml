@@ -24,7 +24,7 @@ _common:
 jobs:
   test:
     docker:
-      - image: cimg/openjdk:8.0.362
+      - image: cimg/openjdk:11.0.20
     working_directory: ~/repo
     steps:
       - checkout
@@ -38,7 +38,7 @@ jobs:
           key: v1-dependencies-{{ checksum "build.sbt" }}
   deploy:
     docker:
-      - image: cimg/openjdk:8.0.362
+      - image: cimg/openjdk:11.0.20
     working_directory: ~/repo
     steps:
       - checkout

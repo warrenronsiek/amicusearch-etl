@@ -25,6 +25,7 @@ object Main extends LazyLogging {
   }
 
   def main(args: Array[String]): Unit = {
+    logger.info("received arguments: " + args.mkString(","))
     run(AppParams(args))
   }
 }

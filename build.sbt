@@ -1,6 +1,6 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
-ThisBuild / scalaVersion := "2.13.10"
+ThisBuild / scalaVersion := "2.12.18"
 
 dependencyOverrides += "org.scala-lang.modules" %% "scala-xml" % "2.1.0" // spark requires 2.1.0, which is incompatible with sclatest requirement of 1.2.0
 
@@ -8,11 +8,11 @@ lazy val root = (project in file("."))
   .settings(
     name := "AmicusearchETL",
     libraryDependencies ++= Seq(
-      "com.warren-r" % "sparkutils_2.13" % "0.1.4",
+//      "com.warren-r" % "sparkutils_2.13" % "0.1.4"  % Test,
       "org.apache.hadoop" % "hadoop-aws" % "3.3.4",
       "com.amazonaws" % "aws-java-sdk" % "1.11.901", // do not update, is a dep with hadoop-aws
-      "org.apache.spark" %% "spark-core" % "3.5.0" % "provided",
-      "org.apache.spark" %% "spark-sql" % "3.5.0" % "provided",
+      "org.apache.spark" %% "spark-core" % "3.5.0" % Provided,
+      "org.apache.spark" %% "spark-sql" % "3.5.0" % Provided,
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
       "com.typesafe" % "config" % "1.4.2",
       "com.github.scopt" %% "scopt" % "4.1.0",
