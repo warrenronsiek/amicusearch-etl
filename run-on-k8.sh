@@ -1,4 +1,4 @@
-
+#!/bin/zsh
 # these files need to be in the spark classpath in order for spark-submit to be able to upload/download the fat jar from s3
 
 if [ ! -f "/opt/spark/jars/bcprov-jdk15on-1.70.jar" ]; then

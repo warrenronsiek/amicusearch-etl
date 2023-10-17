@@ -1,7 +1,7 @@
 package com.amicusearch.etl.utils
 
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.spark.sql.streaming.OutputMode
+import org.apache.spark.sql.streaming.{OutputMode, Trigger}
 import org.apache.spark.sql.{Dataset, SQLContext, SaveMode, SparkSession}
 
 class ParquetWriter(writePath: String, partitionCols: List[String])
@@ -11,6 +11,7 @@ class ParquetWriter(writePath: String, partitionCols: List[String])
       .partitionBy(partitionCols: _*)
       .outputMode(OutputMode.Append())
       .format("parquet")
+      .trigger(Trigger.Continuous(10000))
       .option("path", writePath)
       .start()
   }
