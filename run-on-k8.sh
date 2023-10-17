@@ -38,6 +38,10 @@ nohup spark-submit \
   --conf spark.kubernetes.driver.volumes.hostPath.myvolume.options.path=$HOST_MOUNT \
   --conf spark.kubernetes.executor.volumes.hostPath.myvolume.mount.path=/tmp/fsmount/ \
   --conf spark.kubernetes.executor.volumes.hostPath.myvolume.options.path=$HOST_MOUNT \
+  --conf spark.kubernetes.driver.volumes.persistentVolumeClaim.myvolume.options.claimName=spark-pvc \
+  --conf spark.kubernetes.driver.volumes.persistentVolumeClaim.myvolume.mount.path=/tmp/results \
+  --conf spark.kubernetes.executor.volumes.persistentVolumeClaim.myvolume.options.claimName=spark-pvc \
+  --conf spark.kubernetes.executor.volumes.persistentVolumeClaim.myvolume.mount.path=/tmp/results \
   --conf spark.kubernetes.container.image=warrenronsiek/spark-aws-k8:1.0.0 \
   --conf spark.kubernetes.authenticate.serviceAccountName=default \
   --conf spark.kubernetes.file.upload.path=s3a://amicusearch/etl-k8s/ \
