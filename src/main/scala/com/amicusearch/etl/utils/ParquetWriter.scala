@@ -11,7 +11,6 @@ class ParquetWriter(writePath: String, partitionCols: List[String])
       .partitionBy(partitionCols: _*)
       .outputMode(OutputMode.Append())
       .format("parquet")
-      .trigger(Trigger.Continuous(10000))
       .option("path", writePath)
       .start()
   }
