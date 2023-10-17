@@ -27,7 +27,7 @@ object RunCourtlistener {
   implicit val sql: SQLContext = spark.sqlContext
 
   def apply(appParams: AppParams, config: Config): Unit = {
-    val writer: ParquetWriter = ParquetWriter(config.getString("courtlistener.results.local"),  List("date_partition", "region_partition"), SaveMode.Append)
+    val writer: ParquetWriter = ParquetWriter(config.getString("courtlistener.results.local"),  List("date_partition", "region_partition"))
 
     val courts: Dataset[Court] = processCourts(config.getString("courtlistener.courts"), appParams.env, appParams.states, appParams.includeFederal)()
     val dockets: Dataset[DocketsWithNulls] = processDockets(config.getString("courtlistener.dockets"), appParams.env)()
