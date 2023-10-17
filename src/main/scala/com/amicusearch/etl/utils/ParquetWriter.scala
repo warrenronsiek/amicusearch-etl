@@ -19,10 +19,11 @@ class ParquetWriter(writePath: String, partitionCols: List[String], saveMode: Sa
     ds.withColumn("rand_partition", (row_number.over(window) / 500000).cast(LongType))
       .repartition(newPartitions.map(s => col(s)):_*)
       .drop("rand_partition")
-      .write
-      .mode(saveMode)
+      .writeStream
       .partitionBy(partitionCols: _*)
-      .parquet(writePath)
+      .format("parquet")
+      .option("path", writePath)
+      .start()
   }
 }
 
