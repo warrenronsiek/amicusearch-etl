@@ -14,7 +14,7 @@ object Main extends LazyLogging {
       case AppParams.Environment.cci => "cci.conf"
     })
     implicit val spark: SparkSession = SparkSession.builder
-      .config(SparkConf.sparkConf(conf.getString("results.checkpoint"))).getOrCreate()
+      .config(SparkConf.sparkConf(conf.getString("courtlistener.results.checkpoint"))).getOrCreate()
     implicit val sc: SparkContext = spark.sparkContext
     implicit val sql: SQLContext = spark.sqlContext
 
