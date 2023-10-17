@@ -10,8 +10,6 @@ object OpinionsToCitations extends LazyLogging{
   def apply(citations: Dataset[ParsedCitation])(implicit spark: SparkSession, SQLContext: SQLContext):
   Dataset[ClusterOpinion] => Dataset[OpinionCitation] = opinions => {
     import SQLContext.implicits._
-    logger.info(opinions.take(2).map(_.toString).mkString("\n"))
-    logger.info(citations.take(2).map(_.toString).mkString("\n"))
     opinions.joinWith(citations, opinions("cluster_id") === citations("cluster_id"), "left").map {
       case (o: ClusterOpinion, c: ParsedCitation) => OpinionCitation(
         court_id = o.court_id,
