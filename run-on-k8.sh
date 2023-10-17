@@ -29,11 +29,11 @@ nohup spark-submit \
   --deploy-mode cluster \
   --name amicusearch-etl \
   --class com.amicusearch.etl.Main \
-  --conf spark.driver.memory=10g \
-  --conf spark.driver.cores=3 \
+  --conf spark.driver.memory=20g \
+  --conf spark.driver.cores=4 \
   --conf spark.executor.instances=3 \
-  --conf spark.executor.cores=3 \
-  --conf spark.executor.memory=10g \
+  --conf spark.executor.cores=4 \
+  --conf spark.executor.memory=20g \
   --conf spark.kubernetes.driver.volumes.hostPath.inputvol.mount.path=/tmp/fsmount/ \
   --conf spark.kubernetes.driver.volumes.hostPath.inputvol.options.path=$HOST_MOUNT \
   --conf spark.kubernetes.executor.volumes.hostPath.inputvol.mount.path=/tmp/fsmount/ \

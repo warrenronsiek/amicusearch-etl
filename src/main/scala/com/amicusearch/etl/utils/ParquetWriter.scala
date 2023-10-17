@@ -2,7 +2,7 @@ package com.amicusearch.etl.utils
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode, Trigger}
-import org.apache.spark.sql.{Dataset, SQLContext, SaveMode, SparkSession}
+import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 class ParquetWriter(writePath: String, partitionCols: List[String])
                    (implicit spark: SparkSession, sqlContext: SQLContext) extends LazyLogging {
