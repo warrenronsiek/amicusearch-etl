@@ -20,7 +20,7 @@ class ParquetWriterTest extends AnyFlatSpec with GenericAmicusearchTest {
       SFile(outDir).delete()
     }
     SFile(outDir).createDirectoryIfNotExists()
-    val writer = ParquetWriter(outDir, List(), Some(10000))
+    val writer = ParquetWriter(outDir, List())
     testCode(writer.write(ct))
   }
 
