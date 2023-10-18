@@ -10,6 +10,8 @@ object OpinionsToCitations extends LazyLogging{
   def apply(citations: Dataset[ParsedCitation])(implicit spark: SparkSession, SQLContext: SQLContext):
   Dataset[ClusterOpinion] => Dataset[OpinionCitation] = opinions => {
     import SQLContext.implicits._
+    // TODO: there is something wrong with this join, it has more output records than opinions has input records
+    //  this probably has something to do with the cluster-id and how clusters relate to opinions.
     opinions.joinWith(citations, opinions("cluster_id") === citations("cluster_id"), "left").map {
       case (o: ClusterOpinion, c: ParsedCitation) => OpinionCitation(
         court_id = o.court_id,

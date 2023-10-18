@@ -35,7 +35,7 @@ object CreateDatePartition {
       page = o.page,
       cite_type = o.cite_type,
       ltree = o.ltree,
-      date_partition = o.date_filed.substring(0, 7)
+      date_partition = o.date_filed.substring(0, 4)
     ))
   }
 

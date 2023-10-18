@@ -30,10 +30,10 @@ nohup spark-submit \
   --name amicusearch-etl \
   --class com.amicusearch.etl.Main \
   --conf spark.driver.memory=20g \
-  --conf spark.driver.cores=4 \
+  --conf spark.driver.cores=3 \
   --conf spark.executor.instances=3 \
-  --conf spark.executor.cores=4 \
-  --conf spark.executor.memory=20g \
+  --conf spark.executor.cores=5 \
+  --conf spark.executor.memory=25g \
   --conf spark.kubernetes.driver.volumes.hostPath.inputvol.mount.path=/tmp/fsmount/ \
   --conf spark.kubernetes.driver.volumes.hostPath.inputvol.options.path=$HOST_MOUNT \
   --conf spark.kubernetes.executor.volumes.hostPath.inputvol.mount.path=/tmp/fsmount/ \
@@ -49,3 +49,5 @@ nohup spark-submit \
   --conf spark.hadoop.fs.s3a.secret.key=$AWS_SECRET_ACCESS_KEY \
   s3a://amicusearch/etl/AmicusearchETL.jar \
   --mode courtlistener --env dev --states FL,NY --includeFederal true > spark.log 2>&1 &
+
+# to forward the port: `ssh -i ~/.ssh/id_ed25519 -N -L 4040:localhost:30440 warren@192.168.1.25`

@@ -13,8 +13,8 @@ class NLPParser(text: String) {
   val pipeline: StanfordCoreNLP = new StanfordCoreNLP(props)
   val document: CoreDocument = new CoreDocument(text)
   pipeline.annotate(document)
-  val punctuation: Set[String] = Set(",", ".", "!", "?", ";", ":", "(", ")", "[", "]", "{", "}", "-", "_", "+", "=",
-    "@", "#", "$", "%", "^", "&", "*", "|", "/", "\\", "<", ">", "~", "`", "'", "\"", "\n", "\t", "\r")
+  private val punctuation: Set[String] = Set(",", ".", "!", "?", ";", ":", "(", ")", "[", "]", "{", "}", "-", "_", "+",
+    "=", "@", "#", "$", "%", "^", "&", "*", "|", "/", "\\", "<", ">", "~", "`", "'", "\"", "\n", "\t", "\r")
 
   def tokenIterator: Iterator[CoreLabel] = document.tokens().asScala.iterator
   def lemmaIterator: Iterator[String] = tokenIterator.map(_.lemma()).map(_.toLowerCase).filter(!punctuation.contains(_))
