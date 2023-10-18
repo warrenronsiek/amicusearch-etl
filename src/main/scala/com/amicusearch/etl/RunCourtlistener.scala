@@ -71,7 +71,7 @@ object RunCourtlistener {
   val processCitations: (String, AppParams.Environment.Value) => Unit => Dataset[ParsedCitation] =
     (path: String, env: AppParams.Environment.Value) => _ => {
       (ReadCourtListenerCitations(path, env) andThen
-        ParseCitations())(spark)
+        ParseCitations())(spark).cache()
     }
 
   val runJoins: (
@@ -87,6 +87,7 @@ object RunCourtlistener {
      citations: Dataset[ParsedCitation]) => _ => {
       (CourtsToDockets(courts) andThen
         DocketsToClusters(clusters) andThen
+        (df => df.cache()) andThen // opinions is a stream, so we want to cache results immediately prior to joining to the stream
         ClustersToOpinions(opinions) andThen
         OpinionsToCitations(citations))(dockets)
     }

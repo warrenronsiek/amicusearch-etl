@@ -161,8 +161,12 @@ object CourtStructure extends LazyLogging{
         val name = s"federal_bankruptcy_${location.get}_$subDistrict"
         federalDistrictToAppeal.get(name.replace("bankruptcy", "district")) match {
           case Some(appeal) =>
-            val appealCtNumber = getNumber(appeal).get
-            Some(s"federal_supreme.federal_appeal_$appealCtNumber.federal_district_${location.get}.$name")
+            getNumber(appeal) match {
+              case Some(appealCtNumber) => Some(s"federal_supreme.federal_appeal_$appealCtNumber.federal_district_${location.get}.$name")
+              case None =>
+                logger.warn(s"Could not find appeal number for $courtName, subtree: $name")
+                Some(s"federal_supreme.federal_appeal.federal_district_${location.get}.$name")
+            }
           case None =>
             logger.warn(s"Could not find appeal for $courtName, subtree: $name")
             Some(s"federal_supreme.federal_appeal.$name")
