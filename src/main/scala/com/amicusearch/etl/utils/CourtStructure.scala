@@ -145,7 +145,7 @@ object CourtStructure extends LazyLogging{
         Some(s"federal_supreme.${location.get}_supreme")
       case _ if "[Ss]upreme".r.findFirstIn(courtName).isDefined && location.isEmpty =>
         Some(s"federal_supreme")
-      case _ if "District Court, ([A-Z\\.]+)".r.findFirstIn(courtName).isDefined && !courtName.contains("District of Columbia") && !courtName.contains("Virgin Islands") => {
+      case _ if "District Court, ([A-Z\\.]+)".r.findFirstIn(courtName).isDefined && !courtName.contains("District of Columbia") && !courtName.contains("Virgin Islands") && location.isDefined => {
         val subDistrict = "District Court, ([A-Z\\.]+)".r.findFirstMatchIn(courtName).get.group(1).toLowerCase.replace(".", "")
         val name = s"federal_district_${location.get}_$subDistrict"
         federalDistrictToAppeal.get(name) match {
