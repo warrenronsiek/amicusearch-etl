@@ -7,6 +7,7 @@ import scala.concurrent.duration._
 import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
 import upickle.default._
 import upickle.default.{macroRW, ReadWriter => RW}
+import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 
 class Summarizer(env: AppParams.Environment.Value, summaryUrl: String) extends java.io.Serializable{
 
@@ -20,10 +21,17 @@ class Summarizer(env: AppParams.Environment.Value, summaryUrl: String) extends j
     implicit val rw: RW[Request] = macroRW
   }
 
+  implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(3.seconds, maxAttempts = 30)
+
   val summarize: String => String = (text:String) => {
     env match {
       case AppParams.Environment.prod | AppParams.Environment.dev =>
-        val req = requests.post(summaryUrl, data = write(Request(text)))
+        val req = Retry(requests.post(summaryUrl, data = write(Request(text)))) match {
+          case Success(r) => r
+          case Failure(e) =>
+            println(s"Failed to summarize text with error: ${e.getMessage}")
+            throw e
+        }
         read[Response](req.text).summary
       case _ => read[Response]("""{"summary":"stub"}""").summary
     }

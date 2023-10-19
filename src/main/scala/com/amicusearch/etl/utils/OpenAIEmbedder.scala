@@ -6,6 +6,7 @@ import scala.concurrent.duration._
 import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
 import upickle.default._
 import upickle.default.{macroRW, ReadWriter => RW}
+import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 object OpenAIEmbedder extends LazyLogging with java.io.Serializable{
 
   private case class Usage(prompt_tokens: Int, total_tokens: Int) extends java.io.Serializable
@@ -26,7 +27,7 @@ object OpenAIEmbedder extends LazyLogging with java.io.Serializable{
     implicit val rw: RW[EmbeddingPayload] = macroRW
   }
 
-  implicit val retryStrategy = RetryStrategy.fibonacciBackOff(3.seconds, maxAttempts = 30)
+  implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(3.seconds, maxAttempts = 30)
 
   def embed(s: String): Array[Double] = {
     Retry(requests.post("https://api.openai.com/v1/embeddings",
