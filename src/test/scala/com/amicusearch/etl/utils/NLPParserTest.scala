@@ -20,4 +20,16 @@ class NLPParserTest extends AnyFlatSpec {
     val lemmas = parser.lemmaIterator.toList
     assert(lemmas == List("this", "be", "a", "short", "opinion"))
   }
+
+  it should "create sentence block iterators" in {
+    val parser = NLPParser("This is sentence one. This is sentence 2. This is sentence three.")
+    val sentences = parser.sentenceBlockIterator(2).toList
+    assert(sentences == List("This is sentence one. This is sentence 2.", "This is sentence three."))
+  }
+
+  it should "create sentence block iterators with a single sentence" in {
+    val parser = NLPParser("This is sentence one.")
+    val sentences = parser.sentenceBlockIterator(2).toList
+    assert(sentences == List("This is sentence one."))
+  }
 }
