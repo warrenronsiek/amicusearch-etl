@@ -8,7 +8,7 @@ import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.joins.OpinionCitation
 import com.amicusearch.etl.datatypes.courtlistener.opinions.OpinionsCleanWhitespace
-import com.amicusearch.etl.datatypes.courtlistener.transforms.OpinionDatePartition
+import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionDatePartition, OpinionSummary}
 import org.apache.spark.sql.Dataset
 
 class RunCourtlistenerTest extends AnyFlatSpec with GenericAmicusearchTest {
@@ -54,7 +54,7 @@ class RunCourtlistenerTest extends AnyFlatSpec with GenericAmicusearchTest {
     assertSnapshot("ComposedJoins", joins.toDF().coalesce(1), "opinion_id")
   }
 
-  lazy val transforms: Dataset[OpinionDatePartition] = RunCourtlistener.runTransforms(joins).cache()
+  lazy val transforms: Dataset[OpinionSummary] = RunCourtlistener.runTransforms(AppParams.Environment.local, "")(joins).cache()
 
   "Transforms" should "match snapshot" in {
     assertSnapshot("ComposedTransforms", transforms.toDF().coalesce(1), "opinion_id")

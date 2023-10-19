@@ -6,22 +6,22 @@ import scala.concurrent.duration._
 import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
 import upickle.default._
 import upickle.default.{macroRW, ReadWriter => RW}
-object OpenAIEmbedder extends LazyLogging{
+object OpenAIEmbedder extends LazyLogging with java.io.Serializable{
 
-  private case class Usage(prompt_tokens: Int, total_tokens: Int)
+  private case class Usage(prompt_tokens: Int, total_tokens: Int) extends java.io.Serializable
   private object Usage{
     implicit val rw: RW[Usage] = macroRW
   }
-  private case class Datum(embedding: Array[Double], index: Int)
+  private case class Datum(embedding: Array[Double], index: Int) extends java.io.Serializable
   private object Datum{
     implicit val rw: RW[Datum] = macroRW
   }
-  private case class EmbeddingResponse(data:Array[Datum], model: String, usage: Usage)
+  private case class EmbeddingResponse(data:Array[Datum], model: String, usage: Usage) extends java.io.Serializable
   private object EmbeddingResponse{
     implicit val rw: RW[EmbeddingResponse] = macroRW
   }
 
-  private case class EmbeddingPayload(model: String, input: String)
+  private case class EmbeddingPayload(model: String, input: String) extends java.io.Serializable
   private object EmbeddingPayload{
     implicit val rw: RW[EmbeddingPayload] = macroRW
   }

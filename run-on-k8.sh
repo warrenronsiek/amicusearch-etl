@@ -29,7 +29,7 @@ nohup spark-submit \
   --deploy-mode cluster \
   --name amicusearch-etl \
   --class com.amicusearch.etl.Main \
-  --conf spark.driver.memory=20g \
+  --conf spark.driver.memory=25g \
   --conf spark.driver.cores=3 \
   --conf spark.executor.instances=3 \
   --conf spark.executor.cores=5 \

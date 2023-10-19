@@ -37,9 +37,9 @@ object ReadCourtListenerOpinions {
         case AppParams.Environment.local => spark.read.schema(schema).json(path)
         case AppParams.Environment.cci => spark.read.schema(schema).json(path)
         case AppParams.Environment.dev => spark.readStream.schema(schema).option("header", "true")
-          .option("maxFilesPerTrigger", 15).parquet(path).repartition(512)
+          .option("maxFilesPerTrigger", 10).parquet(path).repartition(512)
         case AppParams.Environment.prod => spark.readStream.schema(schema).option("header", "true")
-          .option("maxFilesPerTrigger", 15).parquet(path).repartition(512)
+          .option("maxFilesPerTrigger", 10).parquet(path).repartition(512)
       }
   }
 }
