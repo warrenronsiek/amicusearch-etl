@@ -36,7 +36,7 @@ object RunCourtlistener {
     val citations: Dataset[ParsedCitation] = processCitations(config.getString("courtlistener.citations"), appParams.env)()
 
     (runJoins(courts, dockets, clusters, opinions, citations) andThen
-      runTransforms(appParams.env, config.getString("summarizer.url")) andThen
+      runTransforms(appParams.env, config.getString("mlserver.summarizer.url")) andThen
       writer.write).apply()
   }
 
