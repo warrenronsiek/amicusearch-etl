@@ -7,9 +7,9 @@ import java.util.Properties
 import scala.collection.JavaConverters._
 
 class NLPParser(text: String) {
-  private val props: Properties = new Properties();
+  private val props: Properties = new Properties()
   props.setProperty("annotators", "tokenize,ssplit,pos,lemma")
-  props.setProperty("coref.algorithm", "neural")
+  props.setProperty("coref.algorithm", "statistical")
   private val pipeline: StanfordCoreNLP = new StanfordCoreNLP(props)
   private val document: CoreDocument = new CoreDocument(text)
   pipeline.annotate(document)

@@ -18,10 +18,11 @@ object RemoveTrivialOpinions extends LazyLogging{
       "application", "pawperis", "solicitor", "curiam", "consolidate", "appeal", "discharge", "amicus", "curiae")
 
     def isShort: Boolean = tokensScanned < 50
+    def isShortAndTrivialToken: Boolean = isShort && trivialTokens > 0
     def tooManyTrivialTokens: Boolean = trivialTokens > 2
     def tooFewDistinctTokens: Boolean = tokenSet.size < 20
 
-    def isTrivial: Boolean = isShort || tooManyTrivialTokens || tooFewDistinctTokens
+    def isTrivial: Boolean = isShortAndTrivialToken || tooManyTrivialTokens || tooFewDistinctTokens
 
     def addToken(token: String): TrivialStats = {
       if (trivialTokenSet.contains(token)) {

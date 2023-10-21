@@ -25,6 +25,10 @@ jobs:
   test:
     docker:
       - image: cimg/openjdk:11.0.20
+      - image: ankane/pgvector
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
     working_directory: ~/repo
     steps:
       - checkout
