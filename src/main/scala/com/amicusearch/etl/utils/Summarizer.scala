@@ -26,12 +26,7 @@ class Summarizer(env: AppParams.Environment.Value, summaryUrl: String) extends j
   val summarize: String => String = (text:String) => {
     env match {
       case AppParams.Environment.prod | AppParams.Environment.dev =>
-        val req = Retry(requests.post(summaryUrl, data = write(Request(text)))) match {
-          case Success(r) => r
-          case Failure(e) =>
-            println(s"Failed to summarize text with error: ${e.getMessage}")
-            throw e
-        }
+        val req = requests.post(summaryUrl, data = write(Request(text)))
         read[Response](req.text).summary
       case _ => read[Response]("""{"summary":"stub"}""").summary
     }
