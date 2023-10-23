@@ -14,7 +14,7 @@ object RemoveTrivialOpinions extends LazyLogging{
 
   case class TrivialStats(tokensScanned: Int = 0, trivialTokens: Int = 0, tokenSet: Set[String] = Set()) {
     private val trivialTokenSet: Set[String] = Set(
-      "motion", "affirm", "deny", "dismiss", "suspend", "granted", "pauperis", "certiorari", "disbar", "resign",
+      "motion", "affirm", "deny", "dismiss", "suspend", "grant", "pauperis", "certiorari", "disbar", "resign",
       "application", "pawperis", "solicitor", "curiam", "consolidate", "appeal", "discharge", "amicus", "curiae")
 
     def isShort: Boolean = tokensScanned < 50
@@ -35,7 +35,7 @@ object RemoveTrivialOpinions extends LazyLogging{
 
   @tailrec
   def isTrivial(docIter: Iterator[String], trivialStats: TrivialStats = TrivialStats()): Boolean = {
-    if (docIter.hasNext && trivialStats.isShort) {
+    if (docIter.hasNext && trivialStats.isShort && !trivialStats.tooManyTrivialTokens) {
       val token = docIter.next()
       isTrivial(docIter, trivialStats.addToken(token))
     } else {

@@ -1,13 +1,13 @@
 package com.amicusearch.etl.process.courtlistener.transforms
 
 import com.amicusearch.etl.AppParams
-import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionDatePartition, OpinionSummary}
+import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionLtree, OpinionSummary}
 import com.amicusearch.etl.utils.Summarizer
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 object CreateSummary {
 
-  def apply(env: AppParams.Environment.Value, summarizerUrl: String)(implicit spark: SparkSession, SQLContext: SQLContext): Dataset[OpinionDatePartition] => Dataset[OpinionSummary] = opinions => {
+  def apply(env: AppParams.Environment.Value, summarizerUrl: String)(implicit spark: SparkSession, SQLContext: SQLContext): Dataset[OpinionLtree] => Dataset[OpinionSummary] = opinions => {
     import SQLContext.implicits._
     val summarizer: Summarizer = Summarizer(env, summarizerUrl)
     opinions.map(o => OpinionSummary(
@@ -37,7 +37,6 @@ object CreateSummary {
       page = o.page,
       cite_type = o.cite_type,
       ltree = o.ltree,
-      date_partition = o.date_partition,
       generated_summary = summarizer.summarize(o.plain_text.getOrElse(""))
     ))
   }

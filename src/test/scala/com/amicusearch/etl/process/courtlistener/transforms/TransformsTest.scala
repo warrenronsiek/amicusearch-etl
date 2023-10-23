@@ -9,10 +9,6 @@ class TransformsTest extends AnyFlatSpec with GenericAmicusearchTest {
     assertSnapshot("OpinionsLtree", courtLtree.toDF().coalesce(1), "opinion_id")
   }
 
-  it should "compute date partitions" in {
-    assertSnapshot("OpinionsDatePartition", datePartitions.toDF().coalesce(1), "opinion_id")
-  }
-
   it should "compute summaries" in {
     assertSnapshot("OpinionsSummary", summarized.toDF().coalesce(1), "opinion_id")
   }

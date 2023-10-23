@@ -30,6 +30,6 @@ class AppParamsTest extends AnyFlatSpec with Matchers {
   }
 
   it should "parse mode arguments" in {
-    paramsCourtlistener.mode shouldEqual AppParams.Mode.courtListener
+    paramsCourtlistener.mode shouldEqual AppParams.Mode.CLOpinionProcessor
   }
 }

@@ -19,7 +19,7 @@ object Main extends LazyLogging {
     implicit val sql: SQLContext = spark.sqlContext
 
     params.mode match {
-      case AppParams.Mode.courtListener => RunCourtlistener(params, conf)
+      case AppParams.Mode.CLOpinionProcessor => RunCLOpinionProcessor(params, conf)
       case _ => logger.error("Invalid mode")
     }
   }

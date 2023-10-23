@@ -26,6 +26,5 @@ case class OpinionSummary(court_id: String,
                           page: Option[String],
                           cite_type: Option[String],
                           ltree: Option[String],
-                          date_partition: String,
 
                           generated_summary: String)

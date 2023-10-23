@@ -9,13 +9,13 @@ case class AppParams(mode: AppParams.Mode.Value = AppParams.Mode.partitionCasete
 
 object AppParams {
   object Mode extends Enumeration {
-    val partitionCasetext, caseProcessor, courtListener = Value
+    val partitionCasetext, CLOpinionProcessor, CLOpinionInsert = Value
   }
 
   object Environment extends Enumeration {
     val dev, prod, local, cci = Value
   }
-  
+
   private val builder = OParser.builder[AppParams]
 
   private val parser = {
@@ -26,8 +26,8 @@ object AppParams {
       opt[String]('m', "mode")
         .action((x, c) => c.copy(mode = x match {
           case "partitionCasetext" => AppParams.Mode.partitionCasetext
-          case "caseProcessor" => AppParams.Mode.caseProcessor
-          case "courtlistener" => AppParams.Mode.courtListener
+          case "CLOpinionProcessor" => AppParams.Mode.CLOpinionProcessor
+          case "CLOpinionInsert" => AppParams.Mode.CLOpinionInsert
         }))
         .text("the sub-type of etl you want to run"),
       opt[String]('e', "env")
