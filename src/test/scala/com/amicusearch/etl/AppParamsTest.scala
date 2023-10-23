@@ -15,7 +15,7 @@ class AppParamsTest extends AnyFlatSpec with Matchers {
   }
 
   val paramsCourtlistener: AppParams =
-    AppParams(Array("--mode", "courtlistener", "--env", "local", "--states", "FL,NY", "--includeFederal", "true"))
+    AppParams(Array("--mode", "CLOpinionProcessor", "--env", "local", "--states", "FL,NY", "--includeFederal", "true"))
 
   "AppParamsCourtlistener" should "parse states arguments" in {
     paramsCourtlistener.states shouldEqual List(USRegion.florida, USRegion.new_york)
