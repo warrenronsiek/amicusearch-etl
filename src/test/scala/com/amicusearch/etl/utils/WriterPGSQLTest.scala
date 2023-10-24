@@ -22,7 +22,7 @@ class WriterPGSQLTest extends AnyFlatSpec with GenericAmicusearchTest {
 
   def inserted(testCode: Unit => Unit): Unit = {
     conn.createStatement.execute("DROP TABLE IF EXISTS test")
-    val writer: WriterPGSQL = WriterPGSQL(url, username, password, "test", None, Some(10000))
+    val writer: WriterPGSQL = WriterPGSQL(url, username, password, "test", Some(10000))
     writer.write(processedOpinions)
     testCode()
   }
@@ -37,7 +37,7 @@ class WriterPGSQLTest extends AnyFlatSpec with GenericAmicusearchTest {
     val dummyData = sparkSession.readStream
       .schema(StructType(Array(StructField("id", StringType), StructField("vec", ArrayType(DoubleType)))))
       .json("src/test/resources/dummy_array_data/")
-    val writer: WriterPGSQL = WriterPGSQL(url, username, password, "test_typed_inserts", Some("id int, vec vector(3)"), Some(10000))
+    val writer: WriterPGSQL = WriterPGSQL(url, username, password, "test_typed_inserts", Some(10000))
     writer.write(dummyData)
     testCode()
   }
