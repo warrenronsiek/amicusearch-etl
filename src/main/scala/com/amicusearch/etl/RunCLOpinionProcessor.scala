@@ -13,9 +13,9 @@ import com.amicusearch.etl.process.courtlistener.courts.{FilterCourts, ParseCour
 import com.amicusearch.etl.process.courtlistener.dockets.ParseDockets
 import com.amicusearch.etl.process.courtlistener.joins.{ClustersToOpinions, CourtsToDockets, DocketsToClusters, OpinionsToCitations}
 import com.amicusearch.etl.process.courtlistener.opinions.{ParseHTML, ParseNulls, ParseWhitespace, RemoveTrivialOpinions}
-import com.amicusearch.etl.process.courtlistener.transforms.{CreateCourtLtree, CreateSummary}
+import com.amicusearch.etl.process.courtlistener.transforms.{CreateCourtLtree, CreateSummary, Deduplicate}
 import com.amicusearch.etl.read.courtlistener._
-import com.amicusearch.etl.utils.{ParquetWriter, USRegion}
+import com.amicusearch.etl.utils.{WriterParquet, USRegion}
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Dataset, SQLContext, SaveMode, SparkSession}
@@ -27,7 +27,7 @@ object RunCLOpinionProcessor {
   implicit val sql: SQLContext = spark.sqlContext
 
   def apply(appParams: AppParams, config: Config): Unit = {
-    val writer: ParquetWriter = ParquetWriter(config.getString("courtlistener.results.local"), List("region_partition"))
+    val writer: WriterParquet = WriterParquet(config.getString("courtlistener.results.local"), List("region_partition"))
 
     val courts: Dataset[Court] = processCourts(config.getString("courtlistener.courts"), appParams.env, appParams.states, appParams.includeFederal)()
     val dockets: Dataset[DocketsWithNulls] = processDockets(config.getString("courtlistener.dockets"), appParams.env)()
@@ -87,7 +87,7 @@ object RunCLOpinionProcessor {
      citations: Dataset[ParsedCitation]) => _ => {
       (CourtsToDockets(courts) andThen
         DocketsToClusters(clusters) andThen
-        (df => df.cache()) andThen // opinions is a stream, so we want to cache results immediately prior to joining to the stream
+        (_.cache()) andThen // opinions is a stream, so we want to cache results immediately prior to joining to the stream
         ClustersToOpinions(opinions) andThen
         OpinionsToCitations(citations))(dockets)
     }
@@ -95,6 +95,7 @@ object RunCLOpinionProcessor {
   val runTransforms: (AppParams.Environment.Value, String) => Dataset[OpinionCitation] => Dataset[OpinionSummary] =
     (env: AppParams.Environment.Value, summarizerUrl: String) => (opinionCitations: Dataset[OpinionCitation]) => {
       (CreateCourtLtree() andThen
+        Deduplicate() andThen
         CreateSummary(env, summarizerUrl))(opinionCitations)
     }
 }

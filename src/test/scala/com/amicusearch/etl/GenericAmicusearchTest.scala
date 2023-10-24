@@ -15,7 +15,7 @@ import com.amicusearch.etl.process.courtlistener.joins.{ClustersToOpinions, Cour
 import com.amicusearch.etl.process.courtlistener.opinions.{ParseHTML, ParseNulls, ParseWhitespace, RemoveTrivialOpinions}
 import com.amicusearch.etl.process.courtlistener.transforms.{CreateCourtLtree, CreateSummary}
 import com.amicusearch.etl.read.ReadCourtsDB
-import com.amicusearch.etl.read.courtlistener.{ReadCourtListenerCitations, ReadCourtListenerClusters, ReadCourtListenerCourts, ReadCourtListenerDockets, ReadCourtListenerOpinions}
+import com.amicusearch.etl.read.courtlistener.{ReadCourtListenerCitations, ReadCourtListenerClusters, ReadCourtListenerCourts, ReadCourtListenerDockets, ReadCourtListenerOpinions, ReadProcessedOpinions}
 import com.amicusearch.etl.utils.Summarizer
 import com.typesafe.config.{Config, ConfigFactory}
 import com.warren_r.sparkutils.snapshot.SnapshotTest
@@ -75,4 +75,5 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
   val createCourtLtree: Dataset[ClusterOpinion] => Dataset[OpinionLtree] = opinionsToCitations andThen CreateCourtLtree()
   val courtLtree: Dataset[OpinionLtree] = createCourtLtree(opinionsJoinedClusters).cache()
   val summarized: Dataset[OpinionSummary] = CreateSummary(AppParams.Environment.local, "fake").apply(courtLtree).cache()
+
 }

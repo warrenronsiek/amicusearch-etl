@@ -20,6 +20,7 @@ object Main extends LazyLogging {
 
     params.mode match {
       case AppParams.Mode.CLOpinionProcessor => RunCLOpinionProcessor(params, conf)
+      case AppParams.Mode.CLOpinionInsert => RunCLOpinionInsertion(params, conf)
       case _ => logger.error("Invalid mode")
     }
   }

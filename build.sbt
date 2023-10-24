@@ -17,6 +17,7 @@ lazy val root = (project in file("."))
       "com.lihaoyi" %% "requests" % "0.8.0",
       "com.lihaoyi" %% "upickle" % "3.1.3",
       "com.github.hipjim" %% "scala-retry" % "0.3.0",
+      "org.postgresql" % "postgresql" % "42.6.0",
       "com.typesafe" % "config" % "1.4.2",
       "com.github.scopt" %% "scopt" % "4.1.0",
       "com.github.pathikrit" %% "better-files" % "3.9.2",
@@ -34,6 +35,6 @@ lazy val root = (project in file("."))
 assembly / test := {}
 assembly / assemblyJarName := "AmicusearchETL.jar"
 assembly / assemblyMergeStrategy := {
-  case PathList("META-INF", xs@_*) => MergeStrategy.discard
+  case PathList("META-INF", xs*) => MergeStrategy.discard
   case x => MergeStrategy.first
 }

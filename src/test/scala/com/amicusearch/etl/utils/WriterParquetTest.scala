@@ -9,7 +9,7 @@ import better.files.{File => SFile}
 
 import scala.util.{Failure, Try}
 
-class ParquetWriterTest extends AnyFlatSpec with GenericAmicusearchTest {
+class WriterParquetTest extends AnyFlatSpec with GenericAmicusearchTest {
 
   val ct: DataFrame = sparkSession.readStream.schema(ReadCourtListenerCourts.schema)
     .json("src/test/resources/sample_dir/")
@@ -20,7 +20,7 @@ class ParquetWriterTest extends AnyFlatSpec with GenericAmicusearchTest {
       SFile(outDir).delete()
     }
     SFile(outDir).createDirectoryIfNotExists()
-    val writer = ParquetWriter(outDir, List())
+    val writer = WriterParquet(outDir, List())
     testCode(writer.write(ct))
   }
 

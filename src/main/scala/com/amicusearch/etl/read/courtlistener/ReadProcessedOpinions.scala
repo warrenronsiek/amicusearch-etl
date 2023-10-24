@@ -1,7 +1,7 @@
 package com.amicusearch.etl.read.courtlistener
 
 import com.amicusearch.etl.AppParams
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, SparkSession, types}
 import org.apache.spark.sql.types.{StructField, StructType}
 import org.apache.spark.sql.types._
 
@@ -39,6 +39,12 @@ object ReadProcessedOpinions {
   ))
 
   def apply(path: String, env: AppParams.Environment.Value)(implicit spark: SparkSession): Unit => DataFrame = {
-    GenericCourtlisterReader(path, env, schema)
+    _ =>
+      env match {
+        case AppParams.Environment.local => spark.readStream.schema(schema).json(path)
+        case AppParams.Environment.cci => spark.readStream.schema(schema).json(path)
+        case AppParams.Environment.dev => spark.readStream.option("maxFilesPerTrigger", 10).schema(schema).parquet(path)
+        case AppParams.Environment.prod => spark.readStream.option("maxFilesPerTrigger", 10).schema(schema).parquet(path)
+      }
   }
 }
