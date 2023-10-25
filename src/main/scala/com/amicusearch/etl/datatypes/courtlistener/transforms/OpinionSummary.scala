@@ -27,4 +27,4 @@ case class OpinionSummary(court_id: String,
                           cite_type: Option[String],
                           ltree: Option[String],
 
-                          generated_summary: String)
+                          generated_summary: Option[String])

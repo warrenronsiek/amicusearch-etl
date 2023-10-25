@@ -36,7 +36,7 @@ object RunCLOpinionProcessor {
     val citations: Dataset[ParsedCitation] = processCitations(config.getString("courtlistener.citations"), appParams.env)()
 
     (runJoins(courts, dockets, clusters, opinions, citations) andThen
-      runTransforms(appParams.env, config.getString("mlserver.summarizer.url")) andThen
+      runTransforms(appParams.env, config.getString("mlserver.summarizer.url"), appParams.summarize) andThen
       writer.write).apply()
   }
 
@@ -92,10 +92,10 @@ object RunCLOpinionProcessor {
         OpinionsToCitations(citations))(dockets)
     }
 
-  val runTransforms: (AppParams.Environment.Value, String) => Dataset[OpinionCitation] => Dataset[OpinionSummary] =
-    (env: AppParams.Environment.Value, summarizerUrl: String) => (opinionCitations: Dataset[OpinionCitation]) => {
+  val runTransforms: (AppParams.Environment.Value, String, Boolean) => Dataset[OpinionCitation] => Dataset[OpinionSummary] =
+    (env: AppParams.Environment.Value, summarizerUrl: String, summarize: Boolean) => (opinionCitations: Dataset[OpinionCitation]) => {
       (CreateCourtLtree() andThen
         Deduplicate() andThen
-        CreateSummary(env, summarizerUrl))(opinionCitations)
+        CreateSummary(env, summarizerUrl, summarize))(opinionCitations)
     }
 }

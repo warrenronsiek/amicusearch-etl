@@ -35,6 +35,6 @@ lazy val root = (project in file("."))
 assembly / test := {}
 assembly / assemblyJarName := "AmicusearchETL.jar"
 assembly / assemblyMergeStrategy := {
-  case PathList("META-INF", xs@_*) => MergeStrategy.discard
+  case PathList("META-INF", xs@_*) => MergeStrategy.discard // do not update the ampersand syntax - it breaks
   case x => MergeStrategy.first
 }

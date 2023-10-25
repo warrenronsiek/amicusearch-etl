@@ -54,7 +54,7 @@ class RunCLOpinionProcessorTest extends AnyFlatSpec with GenericAmicusearchTest 
     assertSnapshot("ComposedJoins", joins.toDF().coalesce(1), "opinion_id")
   }
 
-  lazy val transforms: Dataset[OpinionSummary] = RunCLOpinionProcessor.runTransforms(AppParams.Environment.local, "")(joins).cache()
+  lazy val transforms: Dataset[OpinionSummary] = RunCLOpinionProcessor.runTransforms(AppParams.Environment.local, "", true)(joins).cache()
 
   "Transforms" should "match snapshot" in {
     assertSnapshot("ComposedTransforms", transforms.toDF().coalesce(1), "opinion_id")

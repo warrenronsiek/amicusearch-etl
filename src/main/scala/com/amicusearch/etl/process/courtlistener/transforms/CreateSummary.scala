@@ -7,7 +7,7 @@ import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 object CreateSummary {
 
-  def apply(env: AppParams.Environment.Value, summarizerUrl: String)(implicit spark: SparkSession, SQLContext: SQLContext): Dataset[OpinionLtree] => Dataset[OpinionSummary] = opinions => {
+  def apply(env: AppParams.Environment.Value,summarizerUrl: String, summarize:Boolean)(implicit spark: SparkSession, SQLContext: SQLContext): Dataset[OpinionLtree] => Dataset[OpinionSummary] = opinions => {
     import SQLContext.implicits._
     val summarizer: Summarizer = Summarizer(env, summarizerUrl)
     opinions.map(o => OpinionSummary(
@@ -37,7 +37,7 @@ object CreateSummary {
       page = o.page,
       cite_type = o.cite_type,
       ltree = o.ltree,
-      generated_summary = summarizer.summarize(o.plain_text.getOrElse(""))
+      generated_summary = if (summarize) Some(summarizer.summarize(o.plain_text.getOrElse(""))) else None
     ))
   }
 }

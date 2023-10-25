@@ -5,11 +5,11 @@ import scopt.OParser
 case class AppParams(mode: AppParams.Mode.Value = AppParams.Mode.partitionCasetext,
                      env: AppParams.Environment.Value = AppParams.Environment.dev,
                      states: List[USRegion.Value] = List.empty[USRegion.Value],
-                     includeFederal: Boolean = false)
+                     includeFederal: Boolean = false, summarize: Boolean = true)
 
 object AppParams {
   object Mode extends Enumeration {
-    val partitionCasetext, CLOpinionProcessor, CLOpinionInsert = Value
+    val partitionCasetext, CLOpinionProcessor, CLOpinionInsert, CLOpinionEmbed = Value
   }
 
   object Environment extends Enumeration {
@@ -28,6 +28,7 @@ object AppParams {
           case "partitionCasetext" => AppParams.Mode.partitionCasetext
           case "CLOpinionProcessor" => AppParams.Mode.CLOpinionProcessor
           case "CLOpinionInsert" => AppParams.Mode.CLOpinionInsert
+          case "CLOpinionEmbed" => AppParams.Mode.CLOpinionEmbed
         }))
         .text("the sub-type of etl you want to run"),
       opt[String]('e', "env")
@@ -43,7 +44,10 @@ object AppParams {
         .text("the states you want to run in"),
       opt[Boolean]('f', "includeFederal")
         .action((x, c) => c.copy(includeFederal = x))
-        .text("whether to include federal courts")
+        .text("whether to include federal courts"),
+      opt[Boolean]('s', "summarize")
+        .action((x, c) => c.copy(summarize = x))
+        .text("whether to summarize the opinions")
     )
   }
 
