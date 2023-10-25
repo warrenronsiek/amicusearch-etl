@@ -16,14 +16,10 @@ class WriterPGSQLTest extends AnyFlatSpec with GenericAmicusearchTest {
   val password = "postgres"
   val conn: Connection = DriverManager.getConnection(url, username, password)
 
-
-  val processedOpinions: DataFrame = ReadProcessedOpinions(getResourcePath("processed_opinions_sample_dir/"),
-    casetextPartitionParams.env)(sparkSession)()
-
   def inserted(testCode: Unit => Unit): Unit = {
     conn.createStatement.execute("DROP TABLE IF EXISTS test")
     val writer: WriterPGSQL = WriterPGSQL(url, username, password, "test", Some(10000))
-    writer.write(processedOpinions)
+    writer.write(processedOpinionStream)
     testCode()
   }
 

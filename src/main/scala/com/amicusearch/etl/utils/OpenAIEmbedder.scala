@@ -27,7 +27,7 @@ object OpenAIEmbedder extends LazyLogging with java.io.Serializable{
     implicit val rw: RW[EmbeddingPayload] = macroRW
   }
 
-  implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(3.seconds, maxAttempts = 30)
+  implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(1.seconds, maxAttempts = 11)
 
   def embed(s: String): Array[Double] = {
     Retry(requests.post("https://api.openai.com/v1/embeddings",

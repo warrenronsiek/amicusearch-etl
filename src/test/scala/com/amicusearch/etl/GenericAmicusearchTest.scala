@@ -76,4 +76,7 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
   val courtLtree: Dataset[OpinionLtree] = createCourtLtree(opinionsJoinedClusters).cache()
   val summarized: Dataset[OpinionSummary] = CreateSummary(AppParams.Environment.local, "fake", summarize=true).apply(courtLtree).cache()
 
+  val processedOpinionStream: DataFrame = ReadProcessedOpinions(getResourcePath("processed_opinions_sample_dir/"),
+    casetextPartitionParams.env)(sparkSession)()
+  val processedOpinions: DataFrame = sparkSession.read.json(getResourcePath("processed_opinions_sample_dir/processed_opinions_sample.jsonl"))
 }
