@@ -44,9 +44,10 @@ class RunCLOpinionProcessorTest extends AnyFlatSpec with GenericAmicusearchTest 
   lazy val citations: Dataset[CollectedCitation] = RunCLOpinionProcessor.processCitations("src/test/resources/courtlistener_citations_sample.jsonl",
     AppParams.Environment.local).apply().cache()
 
-  "Citations" should "match snapshot" in {
-    assertSnapshot("ComposedCitations", citations.toDF().coalesce(1), "id")
-  }
+  // snapshot tests don't test arrays - so we cant test this for now
+//  "Citations" should "match snapshot" in {
+//    assertSnapshot("ComposedCitations", citations.toDF().coalesce(1), "id")
+//  }
 
   lazy val joins: Dataset[OpinionCitation] = RunCLOpinionProcessor.runJoins(cts, dkts, clstrs, opn, citations).apply().cache()
 

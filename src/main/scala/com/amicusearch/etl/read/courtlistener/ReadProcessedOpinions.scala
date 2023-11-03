@@ -29,12 +29,8 @@ object ReadProcessedOpinions {
     StructField("precedential_status", StringType, nullable = true),
     StructField("opinion_id", StringType, nullable = true),
     StructField("plain_text", StringType, nullable = true),
-    StructField("volume", StringType, nullable = true),
-    StructField("reporter", StringType, nullable = true),
-    StructField("page", StringType, nullable = true),
-    StructField("cite_type", StringType, nullable = true),
+    StructField("citations", ArrayType(StringType), nullable = true),
     StructField("ltree", StringType, nullable = true),
-    StructField("date_partition", StringType, nullable = true),
     StructField("generated_summary", StringType, nullable = true)
   ))
 
