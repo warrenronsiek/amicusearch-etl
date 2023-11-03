@@ -22,7 +22,4 @@ case class OpinionCitation(court_id: String,
                            opinion_id: String,
                            plain_text: Option[String],
 
-                           volume: Option[String],
-                           reporter: Option[String],
-                           page: Option[String],
-                           cite_type: Option[String])
+                           citations: Option[Array[String]])

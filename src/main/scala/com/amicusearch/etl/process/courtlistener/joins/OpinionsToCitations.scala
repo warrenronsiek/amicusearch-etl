@@ -1,20 +1,20 @@
 package com.amicusearch.etl.process.courtlistener.joins
 
-import com.amicusearch.etl.datatypes.courtlistener.citations.ParsedCitation
+import com.amicusearch.etl.datatypes.courtlistener.citations.{CollectedCitation, ParsedCitation}
 import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.joins.{ClusterOpinion, DocketCluster, OpinionCitation}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 object OpinionsToCitations extends LazyLogging{
-  def apply(citations: Dataset[ParsedCitation])(implicit spark: SparkSession, SQLContext: SQLContext):
+  def apply(citations: Dataset[CollectedCitation])(implicit spark: SparkSession, SQLContext: SQLContext):
   Dataset[ClusterOpinion] => Dataset[OpinionCitation] = opinions => {
     import SQLContext.implicits._
     // TODO: there is something wrong with this join, it has more output records than opinions has input records
     //  this probably has something to do with the cluster-id and how clusters relate to opinions. Temorarily solved by
     //  deduplicating later in the pipeline
     opinions.joinWith(citations, opinions("cluster_id") === citations("cluster_id"), "left").map {
-      case (o: ClusterOpinion, c: ParsedCitation) => OpinionCitation(
+      case (o: ClusterOpinion, c: CollectedCitation) => OpinionCitation(
         court_id = o.court_id,
         court_citation_string = o.court_citation_string,
         court_short_name = o.court_short_name,
@@ -35,10 +35,7 @@ object OpinionsToCitations extends LazyLogging{
         precedential_status = o.precedential_status,
         opinion_id = o.opinion_id,
         plain_text = o.plain_text,
-        volume = Some(c.volume),
-        reporter = Some(c.reporter),
-        page = Some(c.page),
-        cite_type = Some(c.cite_type),
+        citations = Some(c.citations),
         cluster_id = o.cluster_id,
       )
       case (o: ClusterOpinion, null) => OpinionCitation(
@@ -62,10 +59,7 @@ object OpinionsToCitations extends LazyLogging{
         precedential_status = o.precedential_status,
         opinion_id = o.opinion_id,
         plain_text = o.plain_text,
-        volume = None,
-        reporter = None,
-        page = None,
-        cite_type = None,
+        citations = None,
         cluster_id = o.cluster_id,
       )
     }

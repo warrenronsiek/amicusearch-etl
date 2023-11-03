@@ -1,13 +1,13 @@
 package com.amicusearch.etl
 
-import com.amicusearch.etl.datatypes.courtlistener.citations.ParsedCitation
+import com.amicusearch.etl.datatypes.courtlistener.citations.{CollectedCitation, ParsedCitation}
 import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.joins.OpinionCitation
 import com.amicusearch.etl.datatypes.courtlistener.opinions.OpinionsCleanWhitespace
 import com.amicusearch.etl.datatypes.courtlistener.transforms.OpinionSummary
-import com.amicusearch.etl.process.courtlistener.citations.ParseCitations
+import com.amicusearch.etl.process.courtlistener.citations.{CollectCitations, ConcatCitations, ParseCitations}
 import com.amicusearch.etl.process.courtlistener.clusters.ClusterParseNulls
 import com.amicusearch.etl.process.courtlistener.courts.{FilterCourts, ParseCourts}
 import com.amicusearch.etl.process.courtlistener.dockets.ParseDockets
@@ -15,7 +15,7 @@ import com.amicusearch.etl.process.courtlistener.joins.{ClustersToOpinions, Cour
 import com.amicusearch.etl.process.courtlistener.opinions.{ParseHTML, ParseNulls, ParseWhitespace, RemoveTrivialOpinions}
 import com.amicusearch.etl.process.courtlistener.transforms.{CreateCourtLtree, CreateSummary, Deduplicate}
 import com.amicusearch.etl.read.courtlistener._
-import com.amicusearch.etl.utils.{WriterParquet, USRegion}
+import com.amicusearch.etl.utils.{USRegion, WriterParquet}
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Dataset, SQLContext, SaveMode, SparkSession}
@@ -33,7 +33,7 @@ object RunCLOpinionProcessor {
     val dockets: Dataset[DocketsWithNulls] = processDockets(config.getString("courtlistener.dockets"), appParams.env)()
     val clusters: Dataset[ClusterWithNulls] = processClusters(config.getString("courtlistener.clusters"), appParams.env)()
     val opinions: Dataset[OpinionsCleanWhitespace] = processOpinions(config.getString("courtlistener.opinions"), appParams.env)()
-    val citations: Dataset[ParsedCitation] = processCitations(config.getString("courtlistener.citations"), appParams.env)()
+    val citations: Dataset[CollectedCitation] = processCitations(config.getString("courtlistener.citations"), appParams.env)()
 
     (runJoins(courts, dockets, clusters, opinions, citations) andThen
       runTransforms(appParams.env, config.getString("mlserver.summarizer.url"), appParams.summarize) andThen
@@ -68,10 +68,12 @@ object RunCLOpinionProcessor {
         RemoveTrivialOpinions())(spark)
     }
 
-  val processCitations: (String, AppParams.Environment.Value) => Unit => Dataset[ParsedCitation] =
+  val processCitations: (String, AppParams.Environment.Value) => Unit => Dataset[CollectedCitation] =
     (path: String, env: AppParams.Environment.Value) => _ => {
       (ReadCourtListenerCitations(path, env) andThen
-        ParseCitations())(spark).cache()
+        ParseCitations() andThen
+        ConcatCitations() andThen
+        CollectCitations())(spark).cache()
     }
 
   val runJoins: (
@@ -79,12 +81,12 @@ object RunCLOpinionProcessor {
       Dataset[DocketsWithNulls],
       Dataset[ClusterWithNulls],
       Dataset[OpinionsCleanWhitespace],
-      Dataset[ParsedCitation]) => Unit => Dataset[OpinionCitation] =
+      Dataset[CollectedCitation]) => Unit => Dataset[OpinionCitation] =
     (courts: Dataset[Court],
      dockets: Dataset[DocketsWithNulls],
      clusters: Dataset[ClusterWithNulls],
      opinions: Dataset[OpinionsCleanWhitespace],
-     citations: Dataset[ParsedCitation]) => _ => {
+     citations: Dataset[CollectedCitation]) => _ => {
       (CourtsToDockets(courts) andThen
         DocketsToClusters(clusters) andThen
         (_.cache()) andThen // opinions is a stream, so we want to cache results immediately prior to joining to the stream

@@ -21,9 +21,6 @@ case class OpinionLtree(court_id: String,
                         precedential_status: Option[String],
                         opinion_id: String,
                         plain_text: Option[String],
-                        volume: Option[String],
-                        reporter: Option[String],
-                        page: Option[String],
-                        cite_type: Option[String],
+                        citations: Option[Array[String]],
 
                         ltree: Option[String])

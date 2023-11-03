@@ -12,4 +12,14 @@ class CitationsProcessingSuite extends AnyFlatSpec with GenericAmicusearchTest {
     val df = processedCitations().toDF().coalesce(1)
     assertSnapshot("ParseCitations", df, "id")
   }
+
+  it should "concat citations" in {
+    val df = concatedCitations().toDF().coalesce(1)
+    assertSnapshot("ConcatCitations", df, "id")
+  }
+
+  it should "collect citations" in {
+    val df = collectedCitations().toDF().coalesce(1)
+    assertSnapshot("CollectCitations", df, "cluster_id")
+  }
 }

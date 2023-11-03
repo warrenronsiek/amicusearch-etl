@@ -32,10 +32,7 @@ object CreateSummary {
       precedential_status = o.precedential_status,
       opinion_id = o.opinion_id,
       plain_text = o.plain_text,
-      volume = o.volume,
-      reporter = o.reporter,
-      page = o.page,
-      cite_type = o.cite_type,
+      citations = o.citations,
       ltree = o.ltree,
       generated_summary = if (summarize) Some(summarizer.summarize(o.plain_text.getOrElse(""))) else None
     ))

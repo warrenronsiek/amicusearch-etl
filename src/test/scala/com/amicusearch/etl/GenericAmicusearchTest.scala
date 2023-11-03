@@ -1,13 +1,13 @@
 package com.amicusearch.etl
 
-import com.amicusearch.etl.datatypes.courtlistener.citations.ParsedCitation
+import com.amicusearch.etl.datatypes.courtlistener.citations.{CollectedCitation, ConcatedCitation, ParsedCitation}
 import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.joins.{ClusterOpinion, CourtDocket, DocketCluster, OpinionCitation}
 import com.amicusearch.etl.datatypes.courtlistener.opinions.{OpinionsCleanWhitespace, OpinionsParsedHTML, OpinionsWithNulls}
 import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionLtree, OpinionSummary}
-import com.amicusearch.etl.process.courtlistener.citations.ParseCitations
+import com.amicusearch.etl.process.courtlistener.citations.{CollectCitations, ConcatCitations, ParseCitations}
 import com.amicusearch.etl.process.courtlistener.clusters.ClusterParseNulls
 import com.amicusearch.etl.process.courtlistener.courts.{FilterCourts, ParseCourts}
 import com.amicusearch.etl.process.courtlistener.dockets.ParseDockets
@@ -60,6 +60,8 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
   val opinionCleanedWhitespace: Unit => Dataset[OpinionsCleanWhitespace] = opinionParsedHtml andThen ParseWhitespace() andThen(_.cache())
   val opinionRemovedTrivial: Unit => Dataset[OpinionsCleanWhitespace] = opinionCleanedWhitespace andThen RemoveTrivialOpinions() andThen(_.cache())
   val processedCitations: Unit => Dataset[ParsedCitation] = courtListenerCitations andThen ParseCitations()
+  val concatedCitations: Unit => Dataset[ConcatedCitation] = processedCitations andThen ConcatCitations()
+  val collectedCitations: Unit => Dataset[CollectedCitation] = concatedCitations andThen CollectCitations()
 
   val courts: Unit => Dataset[Court] = courtListenerCourts andThen ParseCourts() andThen FilterCourts()
   val clusters: Unit => Dataset[ClusterWithNulls] = courtListenerClusters andThen ClusterParseNulls()
@@ -70,7 +72,7 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
   val docketsJoinedClusters: Dataset[DocketCluster] = docketsToCluster(courtsJoinedDockets).cache()
   val opinionsToClusters: Dataset[DocketCluster] => Dataset[ClusterOpinion] = ClustersToOpinions(opinionRemovedTrivial())
   val opinionsJoinedClusters: Dataset[ClusterOpinion] = opinionsToClusters(docketsJoinedClusters).cache()
-  val opinionsToCitations: Dataset[ClusterOpinion] => Dataset[OpinionCitation] = OpinionsToCitations(processedCitations())
+  val opinionsToCitations: Dataset[ClusterOpinion] => Dataset[OpinionCitation] = OpinionsToCitations(collectedCitations())
 
   val createCourtLtree: Dataset[ClusterOpinion] => Dataset[OpinionLtree] = opinionsToCitations andThen CreateCourtLtree()
   val courtLtree: Dataset[OpinionLtree] = createCourtLtree(opinionsJoinedClusters).cache()

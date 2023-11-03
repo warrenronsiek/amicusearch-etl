@@ -2,7 +2,7 @@ package com.amicusearch.etl
 
 import org.scalatest.flatspec.AnyFlatSpec
 import com.amicusearch.etl.RunCLOpinionProcessor
-import com.amicusearch.etl.datatypes.courtlistener.citations.ParsedCitation
+import com.amicusearch.etl.datatypes.courtlistener.citations.{CollectedCitation, ParsedCitation}
 import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
@@ -41,7 +41,7 @@ class RunCLOpinionProcessorTest extends AnyFlatSpec with GenericAmicusearchTest 
     assertSnapshot("ComposedOpinions", opn.toDF().coalesce(1), "id")
   }
 
-  lazy val citations: Dataset[ParsedCitation] = RunCLOpinionProcessor.processCitations("src/test/resources/courtlistener_citations_sample.jsonl",
+  lazy val citations: Dataset[CollectedCitation] = RunCLOpinionProcessor.processCitations("src/test/resources/courtlistener_citations_sample.jsonl",
     AppParams.Environment.local).apply().cache()
 
   "Citations" should "match snapshot" in {
