@@ -16,7 +16,7 @@ object RunCLOpinionEmbedding {
   def apply(appParams: AppParams, config: Config): Unit = {
     val writer = WriterPGSQL(config.getString("pgsql.url"),
       config.getString("pgsql.username"),
-      System.getenv("PGPASSWORD"),
+      System.getenv("AMICUSEARCH_PG_PASSWORD"),
       config.getString("inserts.embeddings.tablename"))
 
     (ReadProcessedOpinions(config.getString("courtlistener.results.local"), appParams.env) andThen

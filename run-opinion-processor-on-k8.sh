@@ -50,6 +50,6 @@ nohup spark-submit \
   --conf spark.hadoop.fs.s3a.access.key=$AWS_ACCESS_KEY_ID \
   --conf spark.hadoop.fs.s3a.secret.key=$AWS_SECRET_ACCESS_KEY \
   s3a://amicusearch/etl/AmicusearchETL.jar \
-  --mode CLOpinionProcessor --env prod --states FL,NY --includeFederal true > spark.log 2>&1 &
+  --mode CLOpinionProcessor --env prod --states FL --includeFederal true > spark.log 2>&1 &
 
 # to forward the port: `ssh -i ~/.ssh/id_ed25519 -N -L 4040:localhost:30440 warren@192.168.1.25`
