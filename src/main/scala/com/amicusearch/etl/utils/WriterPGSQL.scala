@@ -7,6 +7,7 @@ class WriterPGSQL(url: String, user: String, password: String, tableName: String
   val props = new java.util.Properties()
   props.setProperty("user", user)
   props.setProperty("password", password)
+  props.setProperty("driver", "org.postgresql.Driver")
 
   val write: Dataset[_] => Unit = df => {
     val ws = df.writeStream.foreachBatch((df: Dataset[_], _: Long) => {

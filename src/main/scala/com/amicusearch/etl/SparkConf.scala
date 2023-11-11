@@ -1,6 +1,5 @@
 package com.amicusearch.etl
 
-import com.typesafe.config.Config
 import org.apache.spark.SparkConf
 
 object SparkConf {
