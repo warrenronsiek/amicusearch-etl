@@ -1,26 +1,21 @@
 #!/bin/zsh
 # these files need to be in the spark classpath in order for spark-submit to be able to upload/download the fat jar from s3
 
-if [ ! -f "/opt/spark/jars/bcprov-jdk15on-1.70.jar" ]; then
-  wget https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/1.70/bcprov-jdk15on-1.70.jar && mv bcprov-jdk15on-1.70.jar /opt/spark/jars/
-else
-  echo "bcprov-jdk15on-1.70.jar already exists"
-fi
-if [ ! -f "/opt/spark/jars/bcpkix-jdk15on-1.70.jar" ]; then
-  wget https://repo1.maven.org/maven2/org/bouncycastle/bcpkix-jdk15on/1.70/bcpkix-jdk15on-1.70.jar && mv bcpkix-jdk15on-1.70.jar /opt/spark/jars/
-else
-  echo "bcpkix-jdk15on-1.70.jar already exists"
-fi
-if [ ! -f "/opt/spark/jars/hadoop-aws-3.3.4.jar" ]; then
-  wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar && mv hadoop-aws-3.3.4.jar /opt/spark/jars/
-else
-  echo "hadoop-aws-3.3.4.jar already exists"
-fi
-if [ ! -f "/opt/spark/jars/aws-java-sdk-bundle-1.11.901.jar" ]; then
-  wget https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.901/aws-java-sdk-bundle-1.11.901.jar && mv aws-java-sdk-bundle-1.11.901.jar /opt/spark/jars/
-else
-  echo "aws-java-sdk-bundle-1.11.901.jar already exists"
-fi
+declare -a jars=(
+  "bcprov-jdk15on-1.70"
+  "bcpkix-jdk15on-1.70"
+  "hadoop-aws-3.3.4"
+  "aws-java-sdk-bundle-1.11.901"
+  "postgresql-42.6.0"
+)
+
+for jar in "${jars[@]}"; do
+  if [ ! -f "/opt/spark/jars/$jar.jar" ]; then
+    wget "https://repo1.maven.org/maven2/$(echo $jar | sed 's/-/\//g')/$jar.jar" -O "/opt/spark/jars/$jar.jar"
+  else
+    echo "$jar.jar already exists"
+  fi
+done
 
 HOST_MOUNT=/home/warren/storage-mount/amicusearch-v2-data/
 
@@ -28,12 +23,15 @@ nohup spark-submit \
   --master k8s://https://127.0.0.1:6443 \
   --deploy-mode cluster \
   --name amicusearch-etl \
+  --driver-class-path /opt/spark/jars/postgresql-42.6.0.jar \
   --class com.amicusearch.etl.Main \
   --conf spark.driver.memory=15g \
   --conf spark.driver.cores=3 \
   --conf spark.executor.instances=3 \
   --conf spark.executor.cores=6 \
   --conf spark.executor.memory=30g \
+  --conf spark.driver.extraClassPath=/opt/spark/jars/postgresql-42.6.0.jar \
+  --conf spark.executor.extraClassPath=/opt/spark/jars/postgresql-42.6.0.jar \
   --conf spark.kubernetes.driver.volumes.hostPath.inputvol.mount.path=/tmp/fsmount/ \
   --conf spark.kubernetes.driver.volumes.hostPath.inputvol.options.path=$HOST_MOUNT \
   --conf spark.kubernetes.executor.volumes.hostPath.inputvol.mount.path=/tmp/fsmount/ \
