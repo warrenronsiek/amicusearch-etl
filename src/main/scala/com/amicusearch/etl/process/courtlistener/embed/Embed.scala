@@ -1,9 +1,9 @@
 package com.amicusearch.etl.process.courtlistener.embed
 
 import com.amicusearch.etl.datatypes.courtlistener.embed.EmbeddedText
-import com.amicusearch.etl.datatypes.courtlistener.transforms.OpinionSummary
-import com.amicusearch.etl.utils.{NLPParser, OpenAIEmbedder}
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SQLContext, SparkSession}
+import com.amicusearch.etl.utils.{CohereEmbedder, NLPParser}
+import org.apache.spark.sql.{Dataset, Row, SQLContext, SparkSession}
+
 import java.security.MessageDigest
 
 object Embed {
@@ -16,17 +16,21 @@ object Embed {
   : Dataset[Row] => Dataset[EmbeddedText] = ds => {
     import SQLContext.implicits._
     ds.flatMap(r => {
-      NLPParser(r.getAs[String]("plain_text")).sentenceBlockIterator(3).map(sentenceBlock => EmbeddedText(
-        region_partition = r.getAs[String]("region_partition"),
-        date_filed = r.getAs[String]("date_filed"),
-        citation_count = r.getAs[String]("citation_count"),
-        precedential_status = r.getAs[String]("precedential_status"),
-        opinion_id = r.getAs[String]("opinion_id"),
-        ltree = r.getAs[String]("ltree"),
-        text = sentenceBlock,
-        text_id = md5(sentenceBlock),
-        embedding = OpenAIEmbedder.embed(sentenceBlock)
-      ))
+      NLPParser(r.getAs[String]("plain_text"))
+        .sentenceBlockIterator(3)
+        .grouped(96)
+        .map(groupBlock => CohereEmbedder.embed(groupBlock))
+        .flatMap(embeddedBlock => embeddedBlock.map(embedding => EmbeddedText(
+          region_partition = r.getAs[String]("region_partition"),
+          date_filed = r.getAs[String]("date_filed"),
+          citation_count = r.getAs[String]("citation_count"),
+          precedential_status = r.getAs[String]("precedential_status"),
+          opinion_id = r.getAs[String]("opinion_id"),
+          ltree = r.getAs[String]("ltree"),
+          text = embedding._1,
+          text_id = md5(embedding._1),
+          embedding = embedding._2,
+        )))
     })
   }
 }

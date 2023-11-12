@@ -32,7 +32,7 @@ object OpenAIEmbedder extends LazyLogging with java.io.Serializable{
   def embed(s: String): Array[Double] = {
     Retry(requests.post("https://api.openai.com/v1/embeddings",
       data = write(EmbeddingPayload("text-embedding-ada-002", s)),
-      headers = Map("Authorization" -> s"Bearer ${sys.env("OPENAI_API_KEY")}", "Content-Type" -> "application/json"))
+      headers = Map("Authorization" -> s"Bearer ${System.getenv("OPENAI_API_KEY")}", "Content-Type" -> "application/json"))
     ) match {
       case Success(r) => read[EmbeddingResponse](r.text).data(0).embedding
       case Failure(e) =>
