@@ -41,7 +41,7 @@ object CohereEmbedder extends LazyLogging with java.io.Serializable {
     implicit val rw: RW[EmbeddingPayload] = macroRW
   }
 
-  implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(1.seconds, maxAttempts = 11)
+  implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(1.seconds, maxAttempts = 1)
 
   def embed(s: String): Array[Double] = {
     Retry(
