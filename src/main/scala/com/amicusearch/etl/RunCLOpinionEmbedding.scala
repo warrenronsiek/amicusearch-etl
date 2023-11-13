@@ -20,7 +20,7 @@ object RunCLOpinionEmbedding {
       config.getString("inserts.embeddings.tablename"))
 
     (ReadProcessedOpinions(config.getString("courtlistener.results.local"), appParams.env) andThen
-      Embed() andThen
+      Embed(System.getenv("COHERE_API_KEY")) andThen
       writer.write)()
   }
 

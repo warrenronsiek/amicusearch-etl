@@ -9,8 +9,7 @@ import upickle.default.{macroRW, ReadWriter => RW}
 import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 
 
-object CohereEmbedder extends LazyLogging with java.io.Serializable {
-  private val cohereKey: String = System.getenv("COHERE_API_KEY")
+class CohereEmbedder(cohereKey: String) extends LazyLogging with java.io.Serializable {
   assert(cohereKey != null, "Cohere API key not found in environment variables")
   assert(cohereKey.length == 40, "Cohere API key is not 64 characters long")
 

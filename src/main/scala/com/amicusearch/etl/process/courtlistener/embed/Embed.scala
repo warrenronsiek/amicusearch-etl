@@ -12,14 +12,15 @@ object Embed {
     MessageDigest.getInstance("MD5").digest(s.getBytes).map("%02x".format(_)).mkString
   }
 
-  def apply()(implicit spark: SparkSession, SQLContext: SQLContext)
+  def apply(cohereKey: String)(implicit spark: SparkSession, SQLContext: SQLContext)
   : Dataset[Row] => Dataset[EmbeddedText] = ds => {
     import SQLContext.implicits._
+    val embedder = new CohereEmbedder(cohereKey)
     ds.flatMap(r => {
       NLPParser(r.getAs[String]("plain_text"))
         .sentenceBlockIterator(3)
         .grouped(96)
-        .map(groupBlock => CohereEmbedder.embed(groupBlock))
+        .map(groupBlock => embedder.embed(groupBlock))
         .flatMap(embeddedBlock => embeddedBlock.map(embedding => EmbeddedText(
           region_partition = r.getAs[String]("region_partition"),
           date_filed = r.getAs[String]("date_filed"),
