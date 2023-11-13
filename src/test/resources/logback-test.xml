@@ -6,7 +6,7 @@
         <target>System.err</target>
     </appender>
 
-    <logger name="com.warrenr" level="debug"/>
+    <logger name="com.amicusearch" level="debug"/>
     <logger name="org.apache" level="off"/>
 
     <root level="warn">

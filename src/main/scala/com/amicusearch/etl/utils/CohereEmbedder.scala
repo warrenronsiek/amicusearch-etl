@@ -29,6 +29,7 @@ object CohereEmbedder extends LazyLogging with java.io.Serializable {
   implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(1.seconds, maxAttempts = 1)
 
   def embed(s: String): Array[Double] = {
+    logger.info(s"cohere key is ${System.getenv("COHERE_API_KEY")}")
     Retry(
       requests.post("https://api.cohere.ai/v1/embed",
         data = write(EmbeddingPayload("embed-english-v3.0", "search_document", Array(s), "END")),
@@ -43,6 +44,7 @@ object CohereEmbedder extends LazyLogging with java.io.Serializable {
   }
 
   def embed(s: Seq[String]): Array[(String, Array[Double])] = {
+    logger.info(s"cohere key is ${System.getenv("COHERE_API_KEY")}")
     Retry(
       requests.post("https://api.cohere.ai/v1/embed",
         data = write(EmbeddingPayload("embed-english-v3.0", "search_document", s, "END")),
