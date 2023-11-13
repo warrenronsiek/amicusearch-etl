@@ -8,21 +8,6 @@ import upickle.default._
 import upickle.default.{macroRW, ReadWriter => RW}
 import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 
-// curl --request POST \
-//     --url https://api.cohere.ai/v1/embed \
-//     --header 'accept: application/json' \
-//     --header 'authorization: Bearer fMEIGM2Gn5dysiiztSIqfqkhJDxKde2V8DSDJlvC' \
-//     --header 'content-type: application/json' \
-//     --data '
-//{
-//  "texts": [
-//    "hello",
-//    "goodbye"
-//  ],
-//  "model": "embed-english-v3.0"
-//  "truncate": "END"
-//}
-//'
 
 object CohereEmbedder extends LazyLogging with java.io.Serializable {
 
@@ -52,6 +37,7 @@ object CohereEmbedder extends LazyLogging with java.io.Serializable {
       case Success(r) => read[EmbeddingResponse](r.text).embeddings(0)
       case Failure(e) =>
         logger.error(s"Failed to embed string with error: ${e.getMessage}")
+        logger.error(e.toString)
         throw e
     }
   }
@@ -65,6 +51,7 @@ object CohereEmbedder extends LazyLogging with java.io.Serializable {
       case Success(r) => read[EmbeddingResponse](r.text).texts zip read[EmbeddingResponse](r.text).embeddings
       case Failure(e) =>
         logger.error(s"Failed to embed string with error: ${e.getMessage}")
+        logger.error(e.toString)
         throw e
     }
   }
