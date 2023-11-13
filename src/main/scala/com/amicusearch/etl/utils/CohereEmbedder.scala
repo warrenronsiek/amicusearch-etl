@@ -10,6 +10,9 @@ import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 
 
 object CohereEmbedder extends LazyLogging with java.io.Serializable {
+  private val cohereKey: String = System.getenv("COHERE_API_KEY")
+  assert(cohereKey != null, "Cohere API key not found in environment variables")
+  assert(cohereKey.length == 40, "Cohere API key is not 64 characters long")
 
   private case class EmbeddingResponse(id: String, texts: Array[String], embeddings: Array[Array[Double]]) extends java.io.Serializable
 
@@ -29,11 +32,11 @@ object CohereEmbedder extends LazyLogging with java.io.Serializable {
   implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(1.seconds, maxAttempts = 1)
 
   def embed(s: String): Array[Double] = {
-    logger.info(s"last three chars of cohere key is ${System.getenv("COHERE_API_KEY").takeRight(3)}")
+    logger.info(s"last three chars of cohere key is ${cohereKey.takeRight(3)}")
     Retry(
       requests.post("https://api.cohere.ai/v1/embed",
         data = write(EmbeddingPayload("embed-english-v3.0", "search_document", Array(s), "END")),
-        headers = Map("Authorization" -> s"Bearer ${System.getenv("COHERE_API_KEY")}", "Content-Type" -> "application/json"))
+        headers = Map("Authorization" -> s"Bearer $cohereKey", "Content-Type" -> "application/json"))
     ) match {
       case Success(r) =>
         val res: EmbeddingResponse = read[EmbeddingResponse](r.text)
@@ -47,11 +50,11 @@ object CohereEmbedder extends LazyLogging with java.io.Serializable {
   }
 
   def embed(s: Seq[String]): Array[(String, Array[Double])] = {
-    logger.info(s"last three chars of cohere key is ${System.getenv("COHERE_API_KEY").takeRight(3)}")
+    logger.info(s"last three chars of cohere key is ${cohereKey.takeRight(3)}")
     Retry(
       requests.post("https://api.cohere.ai/v1/embed",
         data = write(EmbeddingPayload("embed-english-v3.0", "search_document", s, "END")),
-        headers = Map("Authorization" -> s"Bearer ${System.getenv("COHERE_API_KEY")}", "Content-Type" -> "application/json"))
+        headers = Map("Authorization" -> s"Bearer $cohereKey", "Content-Type" -> "application/json"))
     ) match {
       case Success(r) => read[EmbeddingResponse](r.text).texts zip read[EmbeddingResponse](r.text).embeddings
       case Failure(e) =>
@@ -60,5 +63,4 @@ object CohereEmbedder extends LazyLogging with java.io.Serializable {
         throw e
     }
   }
-
 }
