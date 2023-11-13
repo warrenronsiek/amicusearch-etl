@@ -28,28 +28,22 @@ class CohereEmbedder(cohereKey: String) extends LazyLogging with java.io.Seriali
     implicit val rw: RW[EmbeddingPayload] = macroRW
   }
 
-  implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(1.seconds, maxAttempts = 1)
+  implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(1.seconds, maxAttempts = 11)
 
   def embed(s: String): Array[Double] = {
-    logger.info(s"last three chars of cohere key is ${cohereKey.takeRight(3)}")
     Retry(
       requests.post("https://api.cohere.ai/v1/embed",
         data = write(EmbeddingPayload("embed-english-v3.0", "search_document", Array(s), "END")),
         headers = Map("Authorization" -> s"Bearer $cohereKey", "Content-Type" -> "application/json"))
     ) match {
-      case Success(r) =>
-        val res: EmbeddingResponse = read[EmbeddingResponse](r.text)
-        logger.info(res.toString)
-        res.embeddings(0)
+      case Success(r) => read[EmbeddingResponse](r.text).embeddings(0)
       case Failure(e) =>
         logger.error(s"Failed to embed string with error: ${e.getMessage}")
-        logger.error(e.toString)
         throw e
     }
   }
 
   def embed(s: Seq[String]): Array[(String, Array[Double])] = {
-    logger.info(s"last three chars of cohere key is ${cohereKey.takeRight(3)}")
     Retry(
       requests.post("https://api.cohere.ai/v1/embed",
         data = write(EmbeddingPayload("embed-english-v3.0", "search_document", s, "END")),
@@ -58,7 +52,6 @@ class CohereEmbedder(cohereKey: String) extends LazyLogging with java.io.Seriali
       case Success(r) => read[EmbeddingResponse](r.text).texts zip read[EmbeddingResponse](r.text).embeddings
       case Failure(e) =>
         logger.error(s"Failed to embed string with error: ${e.getMessage}")
-        logger.error(e.toString)
         throw e
     }
   }
