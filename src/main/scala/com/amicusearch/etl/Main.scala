@@ -8,6 +8,7 @@ import org.postgresql.Driver
 
 object Main extends LazyLogging {
   def run(params: AppParams): Unit = {
+    System.setProperty("log4j.configuration", "file:src/main/resources/log4j.properties")
     val conf: Config = ConfigFactory.load(params.env match {
       case AppParams.Environment.prod => "prod.conf"
       case AppParams.Environment.dev => "dev.conf"

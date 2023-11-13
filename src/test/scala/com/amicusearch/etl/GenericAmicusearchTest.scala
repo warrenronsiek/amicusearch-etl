@@ -25,6 +25,7 @@ import org.apache.spark.sql.{DataFrame, Dataset, SQLContext, SparkSession}
 import org.apache.spark.sql.functions._
 
 trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
+  System.setProperty("log4j.configuration", "file:src/test/resources/log4j.properties")
   val sparkConf: SparkConf = new SparkConf()
     .set("appName", "amicusearch-etl")
     .set("spark.sql.files.maxRecordsPerFile", "20000000")
