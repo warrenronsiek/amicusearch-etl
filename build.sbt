@@ -25,8 +25,6 @@ lazy val root = (project in file("."))
       "edu.stanford.nlp" % "stanford-corenlp" % "4.5.4",
       "edu.stanford.nlp" % "stanford-corenlp" % "4.5.4" classifier "models",
       "org.scalatest" %% "scalatest" % "3.2.17" % Test,
-      "ch.qos.logback" % "logback-classic" % "1.3.11" % Test,
-      "ch.qos.logback" % "logback-core" % "1.3.11" % Test,
       "org.bouncycastle" % "bcprov-jdk15on" % "1.70", // is required to play nice with rancher kubernetes
       "org.bouncycastle" % "bcpkix-jdk15on" % "1.70", // is required to play nice with rancher kubernetes
     )

@@ -3,7 +3,7 @@ package com.amicusearch.etl.utils
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class CohereEmbedderTest extends AnyFlatSpec with Matchers{
+class CohereEmbedderTest extends AnyFlatSpec with Matchers {
 
   "CohereEmbedder" should "embed a string" in {
     val embedding = CohereEmbedder.embed("This is a short opinion.")

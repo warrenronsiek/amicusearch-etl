@@ -31,6 +31,7 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
     .set("spark.sql.parquet.binaryAsString", "true")
     .set("spark.sql.session.timeZone", "UTC")
     .set("spark.sql.streaming.checkpointLocation", "/tmp/checkpoint/")
+    .set("spark.driver.extraJavaOptions", "-Dlog4j.configuration=file:src/test/resources/log4j.properties")
   implicit val sparkSession: SparkSession = SparkSession.builder
     .config(sparkConf).master("local[*]").getOrCreate()
   implicit val sc: SparkContext = sparkSession.sparkContext

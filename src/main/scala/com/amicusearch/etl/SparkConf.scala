@@ -11,4 +11,5 @@ object SparkConf {
     .set("spark.sql.session.timeZone", "UTC")
     .set("spark.sql.streaming.checkpointLocation", checkpointLocation)
     .set("driver", "org.postgresql.Driver")
+    .set("spark.driver.extraJavaOptions", "-Dlog4j.configuration=file:src/main/resources/log4j.properties")
 }
