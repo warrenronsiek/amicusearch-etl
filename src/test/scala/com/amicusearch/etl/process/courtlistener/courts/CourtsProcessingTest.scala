@@ -34,7 +34,7 @@ class CourtsProcessingTest extends AnyFlatSpec with GenericAmicusearchTest {
   }
 
   it should "return only filter courts" in {
-    val df = (parsedCourts andThen FilterCourts(List(USRegion.north_carolina), includeFederal = true))().toDF().coalesce(1)
+    val df = (parsedCourts andThen FilterCourts(List(), List(USRegion.north_carolina), includeFederal = true))().toDF().coalesce(1)
     assertSnapshot("FilteredCourts", df, "id")
   }
 }

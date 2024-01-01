@@ -14,6 +14,7 @@ object RunCLOpinionEmbedding {
   implicit val sql: SQLContext = spark.sqlContext
 
   def apply(appParams: AppParams, config: Config): Unit = {
+    // have to pass env vars here because they are available in driver but not in executors.
     val writer = WriterPGSQL(config.getString("pgsql.url"),
       config.getString("pgsql.username"),
       System.getenv("AMICUSEARCH_PG_PASSWORD"),

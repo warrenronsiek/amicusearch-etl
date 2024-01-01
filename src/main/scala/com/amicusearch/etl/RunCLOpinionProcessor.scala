@@ -6,14 +6,14 @@ import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.joins.OpinionCitation
 import com.amicusearch.etl.datatypes.courtlistener.opinions.OpinionsCleanWhitespace
-import com.amicusearch.etl.datatypes.courtlistener.transforms.OpinionSummary
+import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionOutboundCitations, OpinionSummary}
 import com.amicusearch.etl.process.courtlistener.citations.{CollectCitations, ConcatCitations, ParseCitations}
 import com.amicusearch.etl.process.courtlistener.clusters.ClusterParseNulls
 import com.amicusearch.etl.process.courtlistener.courts.{FilterCourts, ParseCourts}
 import com.amicusearch.etl.process.courtlistener.dockets.ParseDockets
 import com.amicusearch.etl.process.courtlistener.joins.{ClustersToOpinions, CourtsToDockets, DocketsToClusters, OpinionsToCitations}
 import com.amicusearch.etl.process.courtlistener.opinions.{ParseHTML, ParseNulls, ParseWhitespace, RemoveTrivialOpinions}
-import com.amicusearch.etl.process.courtlistener.transforms.{CreateCourtLtree, CreateSummary, Deduplicate}
+import com.amicusearch.etl.process.courtlistener.transforms.{CreateCourtLtree, CreateOutboundCitations, CreateSummary, Deduplicate}
 import com.amicusearch.etl.read.courtlistener._
 import com.amicusearch.etl.utils.{USRegion, WriterParquet}
 import com.typesafe.config.Config
@@ -29,7 +29,8 @@ object RunCLOpinionProcessor {
   def apply(appParams: AppParams, config: Config): Unit = {
     val writer: WriterParquet = WriterParquet(config.getString("courtlistener.results.local"), List("region_partition"))
 
-    val courts: Dataset[Court] = processCourts(config.getString("courtlistener.courts"), appParams.env, appParams.states, appParams.includeFederal)()
+    val courts: Dataset[Court] = processCourts(config.getString("courtlistener.courts"),
+      config.getList("courtlistener.court_ids").toArray.toList.map(_.toString), appParams.env, appParams.states, appParams.includeFederal)()
     val dockets: Dataset[DocketsWithNulls] = processDockets(config.getString("courtlistener.dockets"), appParams.env)()
     val clusters: Dataset[ClusterWithNulls] = processClusters(config.getString("courtlistener.clusters"), appParams.env)()
     val opinions: Dataset[OpinionsCleanWhitespace] = processOpinions(config.getString("courtlistener.opinions"), appParams.env)()
@@ -40,11 +41,11 @@ object RunCLOpinionProcessor {
       writer.write).apply()
   }
 
-  val processCourts: (String, AppParams.Environment.Value, List[USRegion.Value], Boolean) => Unit => Dataset[Court] =
-    (path: String, env: AppParams.Environment.Value, states: List[USRegion.Value], includeFederal: Boolean) => _ => {
+  val processCourts: (String, List[String], AppParams.Environment.Value, List[USRegion.Value], Boolean) => Unit => Dataset[Court] =
+    (path: String, courtIds: List[String], env: AppParams.Environment.Value, states: List[USRegion.Value], includeFederal: Boolean) => _ => {
       (ReadCourtListenerCourts(path, env) andThen
         ParseCourts() andThen
-        FilterCourts(states, includeFederal))(spark)
+        FilterCourts(courtIds, states, includeFederal))(spark)
     }
 
   val processDockets: (String, AppParams.Environment.Value) => Unit => Dataset[DocketsWithNulls] =
@@ -94,10 +95,11 @@ object RunCLOpinionProcessor {
         OpinionsToCitations(citations))(dockets)
     }
 
-  val runTransforms: (AppParams.Environment.Value, String, Boolean) => Dataset[OpinionCitation] => Dataset[OpinionSummary] =
+  val runTransforms: (AppParams.Environment.Value, String, Boolean) => Dataset[OpinionCitation] => Dataset[OpinionOutboundCitations] =
     (env: AppParams.Environment.Value, summarizerUrl: String, summarize: Boolean) => (opinionCitations: Dataset[OpinionCitation]) => {
       (CreateCourtLtree() andThen
         Deduplicate() andThen
-        CreateSummary(env, summarizerUrl, summarize))(opinionCitations)
+        CreateSummary(env, summarizerUrl, summarize) andThen
+        CreateOutboundCitations(env, summarizerUrl))(opinionCitations)
     }
 }

@@ -9,7 +9,7 @@ object ConcatCitations {
     import SQLContext.implicits._
     df.map((r: ParsedCitation) => ConcatedCitation(
       id = r.id,
-      citation =   r.volume + "|" + r.reporter + "|" + r.page,
+      citation =   r.volume + " " + r.reporter + " " + r.page,
       cluster_id = r.cluster_id
     ))
   }

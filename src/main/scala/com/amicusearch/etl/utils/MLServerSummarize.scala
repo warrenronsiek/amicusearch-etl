@@ -10,7 +10,7 @@ import upickle.default._
 import upickle.default.{macroRW, ReadWriter => RW}
 import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 
-class Summarizer(env: AppParams.Environment.Value, summaryUrl: String) extends java.io.Serializable with LazyLogging {
+class MLServerSummarize(env: AppParams.Environment.Value, summaryUrl: String) extends java.io.Serializable with LazyLogging {
 
   private case class Response(summary: String) extends java.io.Serializable
 
@@ -42,8 +42,8 @@ class Summarizer(env: AppParams.Environment.Value, summaryUrl: String) extends j
   }
 }
 
-object Summarizer {
-  def apply(env: AppParams.Environment.Value, summaryUrl: String): Summarizer = {
-    new Summarizer(env, summaryUrl)
+object MLServerSummarize {
+  def apply(env: AppParams.Environment.Value, summaryUrl: String): MLServerSummarize = {
+    new MLServerSummarize(env, summaryUrl)
   }
 }

@@ -150,4 +150,12 @@ class CourtStructureTest extends AnyFlatSpec with Matchers with TableDrivenPrope
     }
   }
 
+  "Opensearch Court structure" should "create opensearch arrays" in {
+    val osLtree = CourtStructure.getLtreeOpensearch("District Court, Virgin Islands")
+    val res = Array(
+      "federal_supreme",
+      "federal_supreme/federal_appeal",
+      "federal_supreme/federal_appeal/federal_virgin_islands")
+    osLtree.get should contain theSameElementsAs (res)
+  }
 }

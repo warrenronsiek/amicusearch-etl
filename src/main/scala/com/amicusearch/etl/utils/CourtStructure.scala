@@ -121,6 +121,15 @@ object CourtStructure extends LazyLogging{
       .replace(" ", ""))
   }
 
+  def getLtreeOpensearch(courtName: String): Option[Array[String]] = {
+    getCourtLtree(courtName).map(_.split("\\.").foldLeft[List[String]](List())((acc, elem) => {
+      if (acc.isEmpty)
+        List(elem)
+      else
+        (acc.head + "/" + elem) :: acc
+    }).reverse.toArray)
+  }
+
   def getCourtLtree(courtName:String): Option[String] = {
     lazy val location: Option[String] = getRegion(courtName)
     lazy val number: Option[Int] = getNumber(courtName)

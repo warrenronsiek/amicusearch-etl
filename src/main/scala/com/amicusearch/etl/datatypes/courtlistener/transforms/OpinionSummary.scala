@@ -22,6 +22,6 @@ case class OpinionSummary(court_id: String,
                           opinion_id: String,
                           plain_text: Option[String],
                           citations: Option[Array[String]],
-                          ltree: Option[String],
+                          ltree: Option[Array[String]],
 
                           generated_summary: Option[String])

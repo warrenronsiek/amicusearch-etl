@@ -1,16 +1,17 @@
 package com.amicusearch.etl.process.courtlistener.transforms
 
 import com.amicusearch.etl.AppParams
-import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionLtree, OpinionSummary}
-import com.amicusearch.etl.utils.MLServerSummarize
+import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionOutboundCitations, OpinionSummary}
+import com.amicusearch.etl.utils.MLServerGetCitations
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
-object CreateSummary {
+object CreateOutboundCitations {
 
-  def apply(env: AppParams.Environment.Value,summarizerUrl: String, summarize:Boolean)(implicit spark: SparkSession, SQLContext: SQLContext): Dataset[OpinionLtree] => Dataset[OpinionSummary] = opinions => {
+  def apply(env: AppParams.Environment.Value, getCitationsUrl: String)
+           (implicit spark: SparkSession, SQLContext: SQLContext): Dataset[OpinionSummary] => Dataset[OpinionOutboundCitations] = opinions => {
     import SQLContext.implicits._
-    val summarizer: MLServerSummarize = MLServerSummarize(env, summarizerUrl)
-    opinions.map(o => OpinionSummary(
+    val getCites = MLServerGetCitations(env, getCitationsUrl)
+    opinions.map(o => OpinionOutboundCitations(
       court_id = o.court_id,
       court_citation_string = o.court_citation_string,
       court_short_name = o.court_short_name,
@@ -34,7 +35,8 @@ object CreateSummary {
       plain_text = o.plain_text,
       citations = o.citations,
       ltree = o.ltree,
-      generated_summary = if (summarize) Some(summarizer.summarize(o.plain_text.getOrElse(""))) else None
+      generated_summary = o.generated_summary,
+      outbound_citations = getCites.getCitations(o.plain_text.getOrElse("")).toArray
     ))
   }
 }

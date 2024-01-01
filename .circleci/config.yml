@@ -25,6 +25,13 @@ jobs:
   test:
     docker:
       - image: cimg/openjdk:11.0.20
+      - image: opensearchproject/opensearch:latest
+        environment:
+          discovery.type: single-node
+          cluster.name: opensearch-cluster
+          bootstrap.memory_lock: true
+          ES_JAVA_OPTS: -Xms512m -Xmx512m
+          OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
       - image: ankane/pgvector
         environment:
           POSTGRES_USER: postgres
