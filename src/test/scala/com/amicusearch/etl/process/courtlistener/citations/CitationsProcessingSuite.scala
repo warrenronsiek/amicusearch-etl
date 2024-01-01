@@ -1,8 +1,6 @@
 package com.amicusearch.etl.process.courtlistener.citations
 
 import com.amicusearch.etl.GenericAmicusearchTest
-import com.amicusearch.etl.datatypes.courtlistener.citations.ParsedCitation
-import org.apache.spark.sql.Dataset
 import org.scalatest.flatspec.AnyFlatSpec
 
 class CitationsProcessingSuite extends AnyFlatSpec with GenericAmicusearchTest {
