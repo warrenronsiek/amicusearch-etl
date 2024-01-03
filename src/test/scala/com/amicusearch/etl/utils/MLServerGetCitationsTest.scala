@@ -1,16 +1,13 @@
 package com.amicusearch.etl.utils
 
-import com.amicusearch.etl.{AppParams, GenericAmicusearchTest}
+import com.amicusearch.etl.AppParams
+import com.amicusearch.etl.utils.serde.Citation
+import org.json4s._
+import org.json4s.jackson.JsonMethods._
+import org.json4s.jackson.Serialization.write
 import org.scalatest.flatspec.AnyFlatSpec
-import com.typesafe.scalalogging.LazyLogging
-import upickle.default.macroRW
-import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
-import upickle.default.{macroRW, ReadWriter => RW}
-import upickle.default._
-import util.retry.blocking.RetryStrategy.RetryStrategyProducer
-import scala.concurrent.duration._
 
-class MLServerGetCitationsTest  extends AnyFlatSpec with GenericAmicusearchTest {
+class MLServerGetCitationsTest  extends AnyFlatSpec {
 
   val mlgc = new MLServerGetCitations(AppParams.Environment.local, "http://localhost:5000/get_citations")
 
@@ -18,11 +15,11 @@ class MLServerGetCitationsTest  extends AnyFlatSpec with GenericAmicusearchTest 
 
   "Citation" should "be serializable" in {
     val citation = Citation(full = "42 U.S.C. \\u00a7 1983", cite_type = "FullLawCitation")
-    assert(citation == read[Citation](write(citation)))
+    assert(citation == parse(write(citation)).extract[Citation])
   }
 
   it should "parse dummy cite" in {
-    val c = read[Citation]("""{"cite_type": "FullLawCitation", "full": "42 U.S.C. \\u00a7 1983", "reporter": "U.S.C.", "section": "1983", "title": "42"}""")
+    val c = parse("""{"cite_type": "FullLawCitation", "full": "42 U.S.C. \\u00a7 1983", "reporter": "U.S.C.", "section": "1983", "title": "42"}""").extract[Citation]
     assert(c == Citation(cite_type = "FullLawCitation", full = "42 U.S.C. \\u00a7 1983"))
   }
 

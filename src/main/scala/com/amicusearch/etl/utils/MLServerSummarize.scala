@@ -6,23 +6,18 @@ import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.duration._
 import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
-import upickle.default._
-import upickle.default.{macroRW, ReadWriter => RW}
+import org.json4s._
 import util.retry.blocking.RetryStrategy.RetryStrategyProducer
-
+import org.json4s.jackson.JsonMethods._
+import org.json4s.jackson.Serialization.write
 class MLServerSummarize(env: AppParams.Environment.Value, summaryUrl: String) extends java.io.Serializable with LazyLogging {
 
+  implicit val formats: Formats = DefaultFormats
   private case class Response(summary: String) extends java.io.Serializable
 
-  private object Response {
-    implicit val rw: RW[Response] = macroRW
-  }
 
   private case class Request(text: String) extends java.io.Serializable
 
-  private object Request {
-    implicit val rw: RW[Request] = macroRW
-  }
 
   implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(0.5.seconds, maxAttempts = 30)
 
@@ -32,12 +27,12 @@ class MLServerSummarize(env: AppParams.Environment.Value, summaryUrl: String) ex
         Retry(requests.post(summaryUrl, headers = Map("Content-Type" -> "application/json"),
           data = write(Request(text)))
         ) match {
-          case Success(r) => read[Response](r.text).summary
+          case Success(r) => parse(r.text).extract[Response].summary
           case Failure(e) =>
             logger.error(s"Failed to summarize with error: ${e.getMessage}")
             throw e
         }
-      case _ => read[Response]("""{"summary":"stub"}""").summary
+      case _ => parse("""{"summary":"stub"}""").extract[Response].summary
     }
   }
 }

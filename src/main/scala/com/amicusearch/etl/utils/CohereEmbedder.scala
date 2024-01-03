@@ -4,29 +4,24 @@ import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.duration._
 import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
-import upickle.default._
-import upickle.default.{macroRW, ReadWriter => RW}
 import util.retry.blocking.RetryStrategy.RetryStrategyProducer
-
+import org.json4s.jackson.JsonMethods._
+import org.json4s.jackson.Serialization.write
+import org.json4s._
 
 class CohereEmbedder(cohereKey: String) extends LazyLogging with java.io.Serializable {
   assert(cohereKey != null, "Cohere API key not found in environment variables")
   assert(cohereKey.length == 40, "Cohere API key is not 64 characters long")
+  implicit val formats: Formats = DefaultFormats
 
   private case class EmbeddingResponse(id: String, texts: Array[String], embeddings: Array[Array[Double]]) extends java.io.Serializable
 
-  private object EmbeddingResponse {
-    implicit val rw: RW[EmbeddingResponse] = macroRW
-  }
 
   private case class EmbeddingPayload(model: String,
                                       input_type: String,
                                       texts: Seq[String],
                                       truncate: String) extends java.io.Serializable
 
-  private object EmbeddingPayload {
-    implicit val rw: RW[EmbeddingPayload] = macroRW
-  }
 
   implicit val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(1.seconds, maxAttempts = 11)
 
@@ -36,7 +31,7 @@ class CohereEmbedder(cohereKey: String) extends LazyLogging with java.io.Seriali
         data = write(EmbeddingPayload("embed-english-v3.0", "search_document", Array(s), "END")),
         headers = Map("Authorization" -> s"Bearer $cohereKey", "Content-Type" -> "application/json"))
     ) match {
-      case Success(r) => read[EmbeddingResponse](r.text).embeddings(0)
+      case Success(r) => parse(r.text).extract[EmbeddingResponse].embeddings(0)
       case Failure(e) =>
         logger.error(s"Failed to embed string with error: ${e.getMessage}")
         throw e
@@ -49,7 +44,7 @@ class CohereEmbedder(cohereKey: String) extends LazyLogging with java.io.Seriali
         data = write(EmbeddingPayload("embed-english-v3.0", "search_document", s, "END")),
         headers = Map("Authorization" -> s"Bearer $cohereKey", "Content-Type" -> "application/json"))
     ) match {
-      case Success(r) => read[EmbeddingResponse](r.text).texts zip read[EmbeddingResponse](r.text).embeddings
+      case Success(r) => parse(r.text).extract[EmbeddingResponse].texts zip parse(r.text).extract[EmbeddingResponse].embeddings
       case Failure(e) =>
         logger.error(s"Failed to embed string with error: ${e.getMessage}")
         throw e

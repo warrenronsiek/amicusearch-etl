@@ -1,7 +1,6 @@
 package com.amicusearch.etl.datatypes.courtlistener.embed
 
-case class EmbeddedText(region_partition: String,
-                        date_filed: String,
+case class EmbeddedText(date_filed: String,
                         citation_count: String,
                         precedential_status: String,
                         opinion_id: String,
