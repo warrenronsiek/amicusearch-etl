@@ -1,8 +1,6 @@
 package com.amicusearch.etl.datatypes.courtlistener.opensearch
 
 import com.amicusearch.etl.utils.serde.WriteableOpenSearch
-import org.json4s._
-import org.json4s.jackson.Serialization.write
 
 case class ConformedOpinion(court_id: String,
                             court_citation_string: Option[String],

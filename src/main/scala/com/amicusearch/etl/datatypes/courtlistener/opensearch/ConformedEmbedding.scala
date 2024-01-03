@@ -1,7 +1,6 @@
 package com.amicusearch.etl.datatypes.courtlistener.opensearch
 
 import com.amicusearch.etl.utils.serde.WriteableOpenSearch
-import org.json4s._
 
 case class ConformedEmbedding(date_filed: String,
                               citation_count: String,

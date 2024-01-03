@@ -1,11 +1,10 @@
 package com.amicusearch.etl.utils
 
 import com.amicusearch.etl.AppParams
-import com.amicusearch.etl.utils.serde.Citation
-import org.json4s._
-import org.json4s.jackson.JsonMethods._
-import org.json4s.jackson.Serialization.write
 import org.scalatest.flatspec.AnyFlatSpec
+
+import upickle.default.{macroRW, ReadWriter => RW}
+import upickle.default._
 
 class MLServerGetCitationsTest  extends AnyFlatSpec {
 
@@ -15,11 +14,11 @@ class MLServerGetCitationsTest  extends AnyFlatSpec {
 
   "Citation" should "be serializable" in {
     val citation = Citation(full = "42 U.S.C. \\u00a7 1983", cite_type = "FullLawCitation")
-    assert(citation == parse(write(citation)).extract[Citation])
+    assert(citation == read[Citation](write(citation)))
   }
 
   it should "parse dummy cite" in {
-    val c = parse("""{"cite_type": "FullLawCitation", "full": "42 U.S.C. \\u00a7 1983", "reporter": "U.S.C.", "section": "1983", "title": "42"}""").extract[Citation]
+    val c = read[Citation]("""{"cite_type": "FullLawCitation", "full": "42 U.S.C. \\u00a7 1983", "reporter": "U.S.C.", "section": "1983", "title": "42"}""")
     assert(c == Citation(cite_type = "FullLawCitation", full = "42 U.S.C. \\u00a7 1983"))
   }
 
