@@ -31,4 +31,6 @@ case class ConformedOpinion(court_id: String,
 
   override def parent_id: Option[Long] = None
 
+  override def ignoreFields: Option[Set[String]] = Some(Set("opinion_id", "region_partition", "cluster_id"))
+
 }

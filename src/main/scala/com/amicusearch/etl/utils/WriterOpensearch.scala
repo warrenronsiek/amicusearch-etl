@@ -59,8 +59,14 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
       df.foreachPartition((partition: Iterator[T]) => {
         val processed: Iterator[Int] = partition.grouped(100).map((rows: Seq[T]) => {
           val bulkPayload: String = rows.map((row: T) => {
-            val metadataJson: String = f"""{"index":{"_index":"$indexName","_id":${row.id_str}}}"""
-            metadataJson + "\n" + row.toJSON + "\n"
+            row.parent_id match {
+              case Some(parentId) =>
+                val metadataJson: String = f"""{"index":{"_index":"$indexName","_id":${row.id_str},"routing":$parentId}}"""
+                metadataJson + "\n" + row.toJSON + "\n"
+              case None =>
+                val metadataJson: String = f"""{"index":{"_index":"$indexName","_id":${row.id_str}}}"""
+                metadataJson + "\n" + row.toJSON + "\n"
+            }
           }).mkString("")
           val _ = requests.post(
             url + "/_bulk",

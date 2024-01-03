@@ -15,5 +15,7 @@ case class ConformedEmbedding(date_filed: String,
 
   def parent_id: Option[Long] = Some(this.opinion_id.toLong)
 
+  override def ignoreFields: Option[Set[String]] = Some(Set("opinion_id", "text_id"))
+
 
 }
