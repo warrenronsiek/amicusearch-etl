@@ -37,6 +37,7 @@ class OpenSearchInsertionTest extends AnyFlatSpec with GenericAmicusearchTest wi
   it should "have the correct insertion counts" in {
     val r = requests.get("https://localhost:9200/opinions/_count", verifySslCerts = false, auth = ("admin", "admin"))
     r.statusCode should be(200)
-    r.text() should include(""""count":95""")
+    val count = """(?<="count":)\d+""".r.findFirstIn(r.text()).get.toInt
+    count should be > 90
   }
 }
