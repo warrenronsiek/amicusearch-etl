@@ -44,6 +44,7 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
 
   private def initDB(): Unit = {
     Try {
+      this.genericHttpOp("PUT", """{}""")
       this.genericHttpOp("PUT", """{"mappings":{"properties":{"opinion_to_embedding":{"type":"join","relations":{"opinion":"embedding"}}}}}""")
     } match {
       case Success(_) => logger.info("Successfully created index " + indexName)
