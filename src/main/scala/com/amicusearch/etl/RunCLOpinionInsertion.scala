@@ -20,11 +20,15 @@ object RunCLOpinionInsertion {
       config.getString("opensearch.url"),
       config.getString("opensearch.username"),
       System.getenv("AMICUSEARCH_OPENSEARCH_PASSWORD"),
-      "opinions", Some(10000))(spark, sql)
+      "opinions",
+      Some(10000)
+    )(spark, sql)
 
+    insertion(config.getString("courtlistener.results.local"), appParams.env, writer)
+  }
 
-    (ReadProcessedOpinions(config.getString("courtlistener.results.local"), appParams.env) andThen
+  def insertion(path: String, env: AppParams.Environment.Value, writer: WriterOpensearch[ConformedOpinion]): Unit =
+    (ReadProcessedOpinions(path, env) andThen
       ConformOpinions() andThen
       writer.write)()
-  }
 }

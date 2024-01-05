@@ -1,9 +1,12 @@
 package com.amicusearch.etl.utils.serde
 
+import com.typesafe.scalalogging.LazyLogging
+
 import scala.reflect.runtime.universe._
 import scala.reflect.runtime.{currentMirror => cm}
+import upickle.default._
 
-trait WriteableOpenSearch {
+trait WriteableOpenSearch extends LazyLogging {
   def id_str: String
 
   def parent_id: Option[Long]
@@ -26,8 +29,22 @@ trait WriteableOpenSearch {
         fieldValue match {
           case arr: Array[Double] =>
             Some(s""""${field.name.toString}": [${arr.mkString(", ")}]""")
+          case arr: Array[String] =>
+            Some(s""""${field.name.toString}": [${arr.map(s => s"""${write(s)}""").mkString(", ")}]""")
+          case Some(arr: Array[Double]) =>
+            Some(s""""${field.name.toString}": [${arr.mkString(", ")}]""")
+          case Some(arr: Array[String]) =>
+            Some(s""""${field.name.toString}": [${arr.map(s => s"""${write(s)}""").mkString(", ")}]""")
           case n: Number =>
             Some(s""""${field.name.toString}": $n""")
+          case Some(n: Number) =>
+            Some(s""""${field.name.toString}": $n""")
+          case s: String =>
+            Some(s""""${field.name.toString}": ${write(s)}""")
+          case Some(s: String) =>
+            Some(s""""${field.name.toString}": ${write(s)}""")
+          case None =>
+            None
           case _ =>
             Some(s""""${field.name.toString}": "${fieldValue.toString}"""")
         }
@@ -35,7 +52,7 @@ trait WriteableOpenSearch {
     }
 
     val parentChildMap: String = this.parent_id match {
-      case Some(id) => s""""opinion_to_embedding": {"name": "embedding", "parent": "$id"}"""
+      case Some(id) => s""""opinion_to_embedding": {"name": "embedding", "parent": $id}"""
       case None => """"opinion_to_embedding": {"name": "opinion"}"""
     }
 

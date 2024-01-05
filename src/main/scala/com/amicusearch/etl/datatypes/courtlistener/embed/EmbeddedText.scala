@@ -4,7 +4,7 @@ case class EmbeddedText(date_filed: String,
                         citation_count: String,
                         precedential_status: String,
                         opinion_id: String,
-                        ltree: String,
+                        ltree: Seq[String],
                         text: String,
                         text_id: String,
                         embedding: Array[Double])

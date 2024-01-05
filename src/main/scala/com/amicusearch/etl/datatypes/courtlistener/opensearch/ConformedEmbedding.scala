@@ -6,7 +6,7 @@ case class ConformedEmbedding(date_filed: String,
                               citation_count: String,
                               precedential_status: String,
                               opinion_id: String,
-                              ltree: String,
+                              ltree: Array[String],
                               text: String,
                               text_id: String,
                               embedding: Array[Double]) extends WriteableOpenSearch {

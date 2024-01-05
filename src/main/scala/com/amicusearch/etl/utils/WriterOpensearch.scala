@@ -8,6 +8,7 @@ import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.ScalaObjectMapper
+import requests.Response
 
 import scala.util.{Failure, Success, Try}
 
@@ -25,17 +26,19 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
     }
     op match {
       case "PUT" =>
-        requests.put(url + "/" + ix,
+        val resp: Response = requests.put(url + "/" + ix,
           verifySslCerts = env == AppParams.Environment.prod || env == AppParams.Environment.dev,
           auth = (user, password),
           headers = Map("Accept" -> "application/x-ndjson", "Content-Type" -> "application/x-ndjson"),
           data = data)
+        logger.info(resp.text())
       case "POST" =>
-        requests.post(url + "/" + ix,
+        val resp: Response = requests.post(url + "/" + ix,
           verifySslCerts = env == AppParams.Environment.prod || env == AppParams.Environment.dev,
           auth = (user, password),
           headers = Map("Accept" -> "application/x-ndjson", "Content-Type" -> "application/x-ndjson"),
           data = data)
+        logger.info(resp.text())
     }
   }
 
@@ -61,19 +64,20 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
           val bulkPayload: String = rows.map((row: T) => {
             row.parent_id match {
               case Some(parentId) =>
-                val metadataJson: String = f"""{"index":{"_index":"$indexName","_id":${row.id_str},"routing":$parentId}}"""
+                val metadataJson: String = f"""{"index":{"_index":"$indexName","_id":"${row.id_str}","routing":$parentId}}"""
                 metadataJson + "\n" + row.toJSON + "\n"
               case None =>
                 val metadataJson: String = f"""{"index":{"_index":"$indexName","_id":${row.id_str}}}"""
                 metadataJson + "\n" + row.toJSON + "\n"
             }
           }).mkString("")
-          val _ = requests.post(
+          val resp = requests.post(
             url + "/_bulk",
             verifySslCerts = env == AppParams.Environment.prod || env == AppParams.Environment.dev,
             headers = Map("Accept" -> "application/x-ndjson", "Content-Type" -> "application/x-ndjson"),
             data = bulkPayload,
             auth = (user, password))
+          logger.info(resp.text())
           rows.length
         })
         logger.info("Wrote " + processed.sum + " rows to " + indexName)
