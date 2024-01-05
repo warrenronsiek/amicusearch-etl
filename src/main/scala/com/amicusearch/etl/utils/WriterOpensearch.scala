@@ -50,7 +50,7 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
       case Failure(exception) if exception.getMessage contains ("already exists") => logger.info("Index " + indexName + " already exists")
       case Failure(exception) => throw exception
     }
-
+    Thread.sleep(5000)
   }
 
   initDB()
