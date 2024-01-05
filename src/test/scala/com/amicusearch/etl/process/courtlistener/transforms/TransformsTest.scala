@@ -13,4 +13,8 @@ class TransformsTest extends AnyFlatSpec with GenericAmicusearchTest {
     assertSnapshot("OpinionsSummary", summarized.toDF().coalesce(1), "opinion_id")
   }
 
+  it should "compute outbound citations" in {
+    assertSnapshot("OpinionsOutboundCitations", cited.toDF().coalesce(1), "opinion_id")
+  }
+
 }

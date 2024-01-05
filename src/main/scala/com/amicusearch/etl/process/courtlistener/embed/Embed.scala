@@ -22,12 +22,11 @@ object Embed {
         .grouped(96)
         .map(groupBlock => embedder.embed(groupBlock))
         .flatMap(embeddedBlock => embeddedBlock.map(embedding => EmbeddedText(
-          region_partition = r.getAs[String]("region_partition"),
           date_filed = r.getAs[String]("date_filed"),
           citation_count = r.getAs[String]("citation_count"),
           precedential_status = r.getAs[String]("precedential_status"),
           opinion_id = r.getAs[String]("opinion_id"),
-          ltree = r.getAs[String]("ltree"),
+          ltree = r.getAs[Seq[String]]("ltree"),
           text = embedding._1,
           text_id = md5(embedding._1),
           embedding = embedding._2,

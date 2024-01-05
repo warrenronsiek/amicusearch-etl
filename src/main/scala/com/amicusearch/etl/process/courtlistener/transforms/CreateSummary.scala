@@ -2,14 +2,14 @@ package com.amicusearch.etl.process.courtlistener.transforms
 
 import com.amicusearch.etl.AppParams
 import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionLtree, OpinionSummary}
-import com.amicusearch.etl.utils.Summarizer
+import com.amicusearch.etl.utils.MLServerSummarize
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
 object CreateSummary {
 
   def apply(env: AppParams.Environment.Value,summarizerUrl: String, summarize:Boolean)(implicit spark: SparkSession, SQLContext: SQLContext): Dataset[OpinionLtree] => Dataset[OpinionSummary] = opinions => {
     import SQLContext.implicits._
-    val summarizer: Summarizer = Summarizer(env, summarizerUrl)
+    val summarizer: MLServerSummarize = MLServerSummarize(env, summarizerUrl)
     opinions.map(o => OpinionSummary(
       court_id = o.court_id,
       court_citation_string = o.court_citation_string,

@@ -23,4 +23,4 @@ case class OpinionLtree(court_id: String,
                         plain_text: Option[String],
                         citations: Option[Array[String]],
 
-                        ltree: Option[String])
+                        ltree: Option[Array[String]])

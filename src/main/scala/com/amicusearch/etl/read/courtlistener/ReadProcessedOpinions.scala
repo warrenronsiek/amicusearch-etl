@@ -30,8 +30,9 @@ object ReadProcessedOpinions {
     StructField("opinion_id", StringType, nullable = true),
     StructField("plain_text", StringType, nullable = true),
     StructField("citations", ArrayType(StringType), nullable = true),
-    StructField("ltree", StringType, nullable = true),
-    StructField("generated_summary", StringType, nullable = true)
+    StructField("ltree", ArrayType(StringType), nullable = true),
+    StructField("generated_summary", StringType, nullable = true),
+    StructField("outbound_citations", ArrayType(StringType), nullable = true),
   ))
 
   def apply(path: String, env: AppParams.Environment.Value)(implicit spark: SparkSession): Unit => DataFrame = {

@@ -13,7 +13,7 @@ import scala.annotation.tailrec
 object RemoveTrivialOpinions extends LazyLogging{
 
   case class TrivialStats(tokensScanned: Int = 0, trivialTokens: Int = 0, tokenSet: Set[String] = Set()) {
-    private val trivialTokenSet: Set[String] = Set(
+    private val trivialTokenSet: Set[String] = Set("dissent", "reverse", "concur",
       "motion", "affirm", "deny", "dismiss", "suspend", "grant", "pauperis", "certiorari", "disbar", "resign",
       "application", "pawperis", "solicitor", "curiam", "consolidate", "appeal", "discharge", "amicus", "curiae")
 

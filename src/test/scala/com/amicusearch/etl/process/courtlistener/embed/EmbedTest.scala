@@ -11,6 +11,6 @@ class EmbedTest extends AnyFlatSpec with GenericAmicusearchTest {
 
   "Embedding" should "embed opinions" in {
     // embeddings have minor numerical diffs each time, so cant be snapshotted
-    assertSnapshot("Embedding", typeCasted.toDF().drop("embedding").coalesce(1), "text_id")
+    assertSnapshot("Embedding", typeCasted.toDF().drop("").drop("embedding").coalesce(1), "text_id")
   }
 }

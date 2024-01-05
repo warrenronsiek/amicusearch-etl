@@ -4,10 +4,9 @@ import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.duration._
 import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
+import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 import upickle.default._
 import upickle.default.{macroRW, ReadWriter => RW}
-import util.retry.blocking.RetryStrategy.RetryStrategyProducer
-
 
 class CohereEmbedder(cohereKey: String) extends LazyLogging with java.io.Serializable {
   assert(cohereKey != null, "Cohere API key not found in environment variables")
@@ -18,12 +17,10 @@ class CohereEmbedder(cohereKey: String) extends LazyLogging with java.io.Seriali
   private object EmbeddingResponse {
     implicit val rw: RW[EmbeddingResponse] = macroRW
   }
-
   private case class EmbeddingPayload(model: String,
                                       input_type: String,
                                       texts: Seq[String],
                                       truncate: String) extends java.io.Serializable
-
   private object EmbeddingPayload {
     implicit val rw: RW[EmbeddingPayload] = macroRW
   }

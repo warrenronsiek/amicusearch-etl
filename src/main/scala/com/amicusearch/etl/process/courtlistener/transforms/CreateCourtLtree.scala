@@ -32,7 +32,7 @@ object CreateCourtLtree {
       plain_text = o.plain_text,
       citations = o.citations,
       ltree = o.court_full_name match {
-        case Some(s) => CourtStructure.getCourtLtree(s)
+        case Some(s) => CourtStructure.getLtreeOpensearch(s)
         case None => None
       }
     ))
