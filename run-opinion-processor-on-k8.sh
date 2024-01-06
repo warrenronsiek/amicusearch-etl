@@ -42,8 +42,6 @@ nohup spark-submit \
   --conf spark.kubernetes.driver.volumes.persistentVolumeClaim.outputvol.mount.path=/tmp/results \
   --conf spark.kubernetes.executor.volumes.persistentVolumeClaim.outputvol.options.claimName=spark-pvc \
   --conf spark.kubernetes.executor.volumes.persistentVolumeClaim.outputvol.mount.path=/tmp/results \
-  --conf spark.kubernetes.driverEnv.OPENAI_API_KEY=$OPENAI_API_KEY \
-  --conf spark.kubernetes.executorEnv.OPENAI_API_KEY=$OPENAI_API_KEY \
   --conf spark.kubernetes.container.image=warrenronsiek/spark-aws-k8:1.0.0 \
   --conf spark.kubernetes.authenticate.serviceAccountName=default \
   --conf spark.kubernetes.file.upload.path=s3a://amicusearch/etl-k8s/ \

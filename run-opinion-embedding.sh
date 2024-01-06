@@ -42,12 +42,12 @@ nohup spark-submit \
   --conf spark.kubernetes.executor.volumes.persistentVolumeClaim.outputvol.mount.path=/tmp/results \
   --conf spark.kubernetes.driverEnv.COHERE_API_KEY=$COHERE_API_KEY \
   --conf spark.kubernetes.executorEnv.COHERE_API_KEY=$COHERE_API_KEY \
-  --conf spark.kubernetes.driverEnv.AMICUSEARCH_PG_PASSWORD=$AMICUSEARCH_PG_PASSWORD \
-  --conf spark.kubernetes.executorEnv.AMICUSEARCH_PG_PASSWORD=$AMICUSEARCH_PG_PASSWORD \
+  --conf spark.kubernetes.driverEnv.AMICUSEARCH_OPENSEARCH_PASSWORD=$AMICUSEARCH_OPENSEARCH_PASSWORD \
+  --conf spark.kubernetes.executorEnv.AMICUSEARCH_OPENSEARCH_PASSWORD=$AMICUSEARCH_OPENSEARCH_PASSWORD \
   --conf spark.kubernetes.container.image=warrenronsiek/spark-aws-k8:1.0.0 \
   --conf spark.kubernetes.authenticate.serviceAccountName=default \
   --conf spark.kubernetes.file.upload.path=s3a://amicusearch/etl-k8s/ \
   --conf spark.hadoop.fs.s3a.access.key=$AWS_ACCESS_KEY_ID \
   --conf spark.hadoop.fs.s3a.secret.key=$AWS_SECRET_ACCESS_KEY \
   s3a://amicusearch/etl/AmicusearchETL.jar \
-  --mode CLOpinionEmbed --env prod --states FL --includeFederal true > spark.log 2>&1 &
+  --mode CLOpinionEmbed --env dev --states FL --includeFederal false > spark.log 2>&1 &
