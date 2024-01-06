@@ -18,19 +18,16 @@ class WriterOpensearchTest extends AnyFlatSpec with GenericAmicusearchTest with 
   import sparkSession.implicits._
 
 
-  val writer: WriterOpensearch[TestDatum] =
-    WriterOpensearch[TestDatum](AppParams.Environment.local,
-      "https://localhost:9200", "admin", "admin", indexName, Some(1000))
-
-  val writerChild: WriterOpensearch[TestDatumChild] =
-    WriterOpensearch[TestDatumChild](AppParams.Environment.local,
-      "https://localhost:9200", "admin", "admin", indexName, Some(1000))
-
-
   override def beforeAll(): Unit = {
     Try {
       requests.delete(s"https://localhost:9200/$indexName", verifySslCerts = false, auth = ("admin", "admin"))
     }
+    val writer: WriterOpensearch[TestDatum] =
+      WriterOpensearch[TestDatum](AppParams.Environment.local,
+        "https://localhost:9200", "admin", "admin", indexName, Some(1000))
+    val writerChild: WriterOpensearch[TestDatumChild] =
+      WriterOpensearch[TestDatumChild](AppParams.Environment.local,
+        "https://localhost:9200", "admin", "admin", indexName, Some(1000))
     List(
       TestDatum(1, "test data"),
       TestDatum(2, "data 2")
