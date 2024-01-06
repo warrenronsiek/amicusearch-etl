@@ -4,13 +4,17 @@ import com.amicusearch.etl.utils.serde.{TestDatum, TestDatumChild}
 import com.amicusearch.etl.{AppParams, GenericAmicusearchTest}
 import org.apache.spark.sql.{Dataset, SaveMode}
 import org.apache.spark.sql.types._
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 
-class WriterOpensearchTest extends AnyFlatSpec with GenericAmicusearchTest {
+import scala.util.Try
+
+class WriterOpensearchTest extends AnyFlatSpec with GenericAmicusearchTest with BeforeAndAfterAll {
 
 
   private val indexName = "test"
+
   import sparkSession.implicits._
 
 
@@ -22,8 +26,11 @@ class WriterOpensearchTest extends AnyFlatSpec with GenericAmicusearchTest {
     WriterOpensearch[TestDatumChild](AppParams.Environment.local,
       "https://localhost:9200", "admin", "admin", indexName, Some(1000))
 
-  def inserted(testCode: Unit => Unit): Unit = {
-    requests.delete("https://localhost:9200/test", verifySslCerts = false, auth = ("admin", "admin"))
+
+  override def beforeAll(): Unit = {
+    Try {
+      requests.delete(s"https://localhost:9200/$indexName", verifySslCerts = false, auth = ("admin", "admin"))
+    }
     List(
       TestDatum(1, "test data"),
       TestDatum(2, "data 2")
@@ -38,16 +45,16 @@ class WriterOpensearchTest extends AnyFlatSpec with GenericAmicusearchTest {
     val streamChild: Dataset[TestDatumChild] = sparkSession.readStream.schema(StructType(Array(StructField("id", StringType), StructField("vector", ArrayType(DoubleType)), StructField("opinionId", LongType))))
       .parquet("/tmp/testdatachild").as[TestDatumChild]
     writerChild.write(streamChild)
-    testCode()
   }
 
-  "writer" should "write to opensearch" in inserted { _ =>
+
+  "writer" should "write to opensearch" in {
     val r = requests.get(s"https://localhost:9200/$indexName/_doc/1", verifySslCerts = false, auth = ("admin", "admin"))
     r.statusCode should be(200)
     r.text() should include(""""found":true""")
   }
 
-  it should "write to opensearch with parent" in inserted { _ =>
+  it should "write to opensearch with parent" in {
     val r = requests.get(s"https://localhost:9200/$indexName/_doc/3", verifySslCerts = false, auth = ("admin", "admin"))
     r.statusCode should be(200)
     r.text() should include(""""found":true""")
