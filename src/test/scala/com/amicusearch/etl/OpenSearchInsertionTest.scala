@@ -26,17 +26,18 @@ class OpenSearchInsertionTest extends AnyFlatSpec with GenericAmicusearchTest wi
     RunCLOpinionEmbedding.insertion(
       "src/test/resources/processed_opinions_sample_dir",
       AppParams.Environment.local, writerEmbedding)
-    Thread.sleep(100000)
     requests.post(s"https://localhost:9200/opinions/_refresh", verifySslCerts = false, auth = ("admin", "admin"))
   }
 
   "OpenSearchInsertion" should "insert opinions" in {
+    Thread.sleep(100000)
     val r = requests.get("https://localhost:9200/opinions/_doc/4588464", verifySslCerts = false, auth = ("admin", "admin"))
     r.statusCode should be(200)
     r.text() should include(""""found":true""")
   }
 
   it should "have the correct insertion counts" in {
+    Thread.sleep(100000)
     val r = requests.get("https://localhost:9200/opinions/_count", verifySslCerts = false, auth = ("admin", "admin"))
     r.statusCode should be(200)
     val count = """(?<="count":)\d+""".r.findFirstIn(r.text()).get.toInt

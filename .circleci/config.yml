@@ -31,15 +31,12 @@ jobs:
           discovery.type: single-node
           cluster.name: opensearch-cluster
           bootstrap.memory_lock: true
-          ES_JAVA_OPTS: -Xms512m -Xmx512m
-          OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
+          ES_JAVA_OPTS: -Xms1024m -Xmx1024m
+          OPENSEARCH_JAVA_OPTS: -Xms1024m -Xmx1024m
     working_directory: ~/repo
     steps:
       - checkout
       - restore_cache: *cache_moneys
-      - run:
-          name: sleep_for_opensearch
-          command: sleep 300
       - run:
           name: run_tests
           command: sbt test
