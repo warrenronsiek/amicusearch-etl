@@ -19,7 +19,7 @@ import com.amicusearch.etl.utils.{USRegion, WriterParquet}
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Dataset, SQLContext, SaveMode, SparkSession}
-
+import scala.collection.JavaConverters._
 object RunCLOpinionProcessor {
 
   implicit val spark: SparkSession = SparkSession.builder.getOrCreate()
@@ -30,7 +30,7 @@ object RunCLOpinionProcessor {
     val writer: WriterParquet = WriterParquet(config.getString("courtlistener.results.local"), List("region_partition"))
 
     val courts: Dataset[Court] = processCourts(config.getString("courtlistener.courts"),
-      config.getList("courtlistener.court_ids").toArray.toList.map(_.toString), appParams.env, appParams.states, appParams.includeFederal)()
+      config.getStringList("courtlistener.court_ids").asScala.toList, appParams.env, appParams.states, appParams.includeFederal)()
     val dockets: Dataset[DocketsWithNulls] = processDockets(config.getString("courtlistener.dockets"), appParams.env)()
     val clusters: Dataset[ClusterWithNulls] = processClusters(config.getString("courtlistener.clusters"), appParams.env)()
     val opinions: Dataset[OpinionsCleanWhitespace] = processOpinions(config.getString("courtlistener.opinions"), appParams.env)()
