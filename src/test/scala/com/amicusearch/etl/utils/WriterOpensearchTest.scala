@@ -45,7 +45,8 @@ class WriterOpensearchTest extends AnyFlatSpec with GenericAmicusearchTest with 
     val streamChild: Dataset[TestDatumChild] = sparkSession.readStream.schema(StructType(Array(StructField("id", StringType), StructField("vector", ArrayType(DoubleType)), StructField("opinionId", LongType))))
       .parquet("/tmp/testdatachild").as[TestDatumChild]
     writerChild.write(streamChild)
-    Thread.sleep(10000)
+    requests.post(s"https://localhost:9200/$indexName/_refresh", verifySslCerts = false, auth = ("admin", "admin"))
+    Thread.sleep(100000)
   }
 
 

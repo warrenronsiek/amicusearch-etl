@@ -26,6 +26,7 @@ jobs:
     docker:
       - image: cimg/openjdk:11.0.20
       - image: opensearchproject/opensearch:latest
+        name: opensearch-node1
         environment:
           discovery.type: single-node
           cluster.name: opensearch-cluster
@@ -38,7 +39,7 @@ jobs:
       - restore_cache: *cache_moneys
       - run:
           name: sleep_for_opensearch
-          command: sleep 10
+          command: sleep 100
       - run:
           name: run_tests
           command: sbt test
