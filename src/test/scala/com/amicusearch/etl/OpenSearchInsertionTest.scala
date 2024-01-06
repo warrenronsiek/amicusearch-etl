@@ -26,6 +26,7 @@ class OpenSearchInsertionTest extends AnyFlatSpec with GenericAmicusearchTest wi
     RunCLOpinionEmbedding.insertion(
       "src/test/resources/processed_opinions_sample_dir",
       AppParams.Environment.local, writerEmbedding)
+    Thread.sleep(10000)
   }
 
   "OpenSearchInsertion" should "insert opinions" in {
