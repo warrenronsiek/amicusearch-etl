@@ -5,19 +5,8 @@ services:
   amicusearch-ml-server:
     container_name: amicusearch-ml-server
     image: amicusearch-ml-server:latest
-    depends_on:
-      - pgvector
     ports:
       - "5000:5000"
-
-  pgvector:
-    container_name: pgvector
-    image: ankane/pgvector
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
 
   opensearch-node1: # This is also the hostname of the container within the Docker network (i.e. https://opensearch-node1/)
     image: opensearchproject/opensearch:latest

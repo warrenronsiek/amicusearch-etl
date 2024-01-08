@@ -6,7 +6,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import upickle.default.{macroRW, ReadWriter => RW}
 import upickle.default._
 
-class MLServerGetCitationsTest  extends AnyFlatSpec {
+class MLServerGetCitationsTest extends AnyFlatSpec {
 
   val mlgc = new MLServerGetCitations(AppParams.Environment.local, "http://localhost:5000/get_citations")
 
@@ -22,6 +22,10 @@ class MLServerGetCitationsTest  extends AnyFlatSpec {
     assert(c == Citation(cite_type = "FullLawCitation", full = "42 U.S.C. \\u00a7 1983"))
   }
 
+  it should "parce citation array" in {
+    val c = read[Response]("""{"citations":[{"volume":"413","reporter":"So. 2d","page":"877","cite_type":"FullCaseCitation","full":"413 So. 2d 877 (1982","year":"1982"}]}""")
+    assert(c == Response(List(Citation(cite_type = "FullCaseCitation", full = "413 So. 2d 877 (1982"))))
+  }
 
   "Citation getter" should "get citations" in {
     val citations = mlgc.getCitations("This is a short opinion.")
