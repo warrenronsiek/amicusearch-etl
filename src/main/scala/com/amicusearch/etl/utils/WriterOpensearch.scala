@@ -84,9 +84,10 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
   val write: Dataset[T] => Unit = df => {
 
     val ws: DataStreamWriter[T] = df.writeStream.foreachBatch((df: Dataset[T], _: Long) => {
-
+      logger.info(s"Beginning write to $indexName")
       df.foreachPartition((partition: Iterator[T]) => {
         val processed: Iterator[Int] = partition.grouped(100).map((rows: Seq[T]) => {
+          logger.info("Writing batch of " + rows.length + " rows to " + indexName)
           val bulkPayload: String = rows.map((row: T) => {
             row.parent_id match {
               case Some(parentId) =>
@@ -97,12 +98,14 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
                 metadataJson + "\n" + row.toJSON + "\n"
             }
           }).mkString("")
+          logger.info("Generated bulk payload of size " + bulkPayload.length)
           val resp = requests.post(
             url + "/_bulk",
             verifySslCerts = env == AppParams.Environment.prod || env == AppParams.Environment.dev,
             headers = Map("Accept" -> "application/x-ndjson", "Content-Type" -> "application/x-ndjson"),
             data = bulkPayload,
             auth = (user, password))
+          logger.info(s"got a response of: ${resp.statusCode}")
           val response = read[ResponsePayload](resp.text())
           if (response.errors) {
             logger.error("Failed to write batch with error: " + resp.text())

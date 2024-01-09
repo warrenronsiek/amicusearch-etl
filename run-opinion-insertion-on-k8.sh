@@ -47,7 +47,5 @@ nohup spark-submit \
   --conf spark.kubernetes.file.upload.path=s3a://amicusearch/etl-k8s/ \
   --conf spark.hadoop.fs.s3a.access.key=$AWS_ACCESS_KEY_ID \
   --conf spark.hadoop.fs.s3a.secret.key=$AWS_SECRET_ACCESS_KEY \
-  --conf spark.driver.extraJavaOptions=-Dlog4j.configuration=file:log4j.properties \
-  --conf spark.executor.extraJavaOptions=-Dlog4j.configuration=file:log4j.properties \
   s3a://amicusearch/etl/AmicusearchETL.jar \
   --mode CLOpinionInsert --env dev --states FL --includeFederal true > spark.log 2>&1 &
