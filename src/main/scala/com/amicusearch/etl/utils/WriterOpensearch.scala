@@ -16,9 +16,28 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
 
   private val logger = LoggerFactory.getLogger("WriterOpensearch")
 
-  case class IndexResponse(took: Int, errors: Boolean, items: Array[Map[String, Map[String, Map[String, Any]]]])
-  implicit object IndexResponse {
-    implicit val rw: RW[IndexResponse] = macroRW
+  case class Shards(total: Int, successful: Int, failed: Int)
+
+  implicit object Shards {
+    implicit val rw: RW[Shards] = macroRW
+  }
+
+  case class Index(_index: String, _id: String, result: String, _shards: Shards, _seq_no: Int, _primary_term: Int, status: Int)
+
+  implicit object Index {
+    implicit val rw: RW[Index] = macroRW
+  }
+
+  case class IndexContainer(index: Index)
+
+  implicit object IndexContainer {
+    implicit val rw: RW[IndexContainer] = macroRW
+  }
+
+  case class ResponsePayload(took: Int, errors: Boolean, items: Array[IndexContainer])
+
+  implicit object ResponsePayload {
+    implicit val rw: RW[ResponsePayload] = macroRW
   }
 
   private def genericHttpOp(op: String, data: String, index: Option[String] = None): Unit = {
@@ -80,7 +99,7 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
             headers = Map("Accept" -> "application/x-ndjson", "Content-Type" -> "application/x-ndjson"),
             data = bulkPayload,
             auth = (user, password))
-          val response = read[IndexResponse](resp.text())
+          val response = read[ResponsePayload](resp.text())
           if (response.errors) {
             logger.error("Failed to write batch with error: " + resp.text())
           }
