@@ -4,9 +4,9 @@ import com.amazonaws.auth.{AWSCredentialsProvider, AWSStaticCredentialsProvider,
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.model.ListObjectsV2Request
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
-import com.typesafe.scalalogging.LazyLogging
 import com.amicusearch.etl.AppParams.Environment
 import java.time.LocalDate
+import org.slf4j.LoggerFactory
 import java.time.format.DateTimeFormatter
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
@@ -18,8 +18,7 @@ import scala.util.{Failure, Success, Try}
  * 3. If its local, return the fully qualified file path to the resource in question. Local directory resolution is important for running tests.
  * 4. If it is a versioned s3 path, inject the correct version number into the path
  */
-class FilePathResolver(mode: Environment.Value, s3ClientOverride: Option[AmazonS3] = None, version: Option[Int] = None)
-  extends LazyLogging {
+class FilePathResolver(mode: Environment.Value, s3ClientOverride: Option[AmazonS3] = None, version: Option[Int] = None) {
   /**
    * We want to build different clients depending on the context. In particular, we need clients to instantiate
    * differently depending on if they are created locally or in production. We also want to be able to test production
@@ -28,12 +27,14 @@ class FilePathResolver(mode: Environment.Value, s3ClientOverride: Option[AmazonS
    * different use cases. If this seems absurdly complicated, then blame the fact that we have all this "assume role"
    * bullshit that we have to deal with every time we want to do something.
    */
+  private val logger = LoggerFactory.getLogger("FilePathResolver")
+
   private lazy val s3Client: AmazonS3 = (s3ClientOverride, mode) match {
     case (Some(client), _) => client
     case (None, Environment.prod) => AmazonS3ClientBuilder.standard().withRegion(Regions.US_WEST_2).build()
     case (None, Environment.dev) => AmazonS3ClientBuilder.standard().withRegion(Regions.US_WEST_2).build()
     case (None, _) =>
-      val creds:AWSCredentialsProvider = {
+      val creds: AWSCredentialsProvider = {
         new AWSStaticCredentialsProvider(new EnvironmentVariableCredentialsProvider().getCredentials)
       }
       AmazonS3ClientBuilder.standard()
@@ -44,7 +45,9 @@ class FilePathResolver(mode: Environment.Value, s3ClientOverride: Option[AmazonS
 
   private[utils] case class PathResolution(paths: List[String], invalidPathCount: Int) {
     def addPath(path: String): PathResolution = PathResolution(path :: this.paths, this.invalidPathCount)
+
     def incrementInvalidPathCount(): PathResolution = PathResolution(this.paths, 1 + this.invalidPathCount)
+
     def +(that: PathResolution): PathResolution = PathResolution(this.paths ++ that.paths,
       this.invalidPathCount + that.invalidPathCount)
   }
@@ -57,7 +60,7 @@ class FilePathResolver(mode: Environment.Value, s3ClientOverride: Option[AmazonS
    */
   private[utils] val s3PathDateInjector: (String, Option[LocalDate]) => PathResolution =
     (path, date) => {
-      val dateInjected:String = date match {
+      val dateInjected: String = date match {
         case Some(d) => path
           .replace("YYYY", d.format(DateTimeFormatter.ofPattern("yyyy")))
           .replace("MM", d.format(DateTimeFormatter.ofPattern("MM")))
@@ -67,9 +70,11 @@ class FilePathResolver(mode: Environment.Value, s3ClientOverride: Option[AmazonS
       PathResolution(List(dateInjected), 0)
     }
 
-  private [utils] def getBucketKey(s3Path: String): (String, String) = {
+  private[utils] def getBucketKey(s3Path: String): (String, String) = {
     val (bucket: String, prefix: String) = s3Path.substring(5).split("/").toList match {
-      case hd :: tl => (hd, tl.mkString("/") + {if (s3Path.endsWith("/")) "/" else ""})
+      case hd :: tl => (hd, tl.mkString("/") + {
+        if (s3Path.endsWith("/")) "/" else ""
+      })
       case _ => throw new Exception("invalid s3 path")
     }
     (bucket, prefix)
@@ -104,7 +109,7 @@ class FilePathResolver(mode: Environment.Value, s3ClientOverride: Option[AmazonS
    * @param s3path a s3 path string that contains VERSION to be identified - i.e. s3://mybucekt/mypath/VERSION/foo/bar.txt
    * @return the largest version of the directory that exists for the provided path
    */
-  private [utils] def getLatestVersion(s3path: String): Option[Int] = {
+  private[utils] def getLatestVersion(s3path: String): Option[Int] = {
     val (bucket, key) = getBucketKey(s3path)
     val keyWithoutVersion = key.replace("VERSION/", "")
     s3Client.listObjectsV2(new ListObjectsV2Request().withBucketName(bucket)
@@ -127,7 +132,8 @@ class FilePathResolver(mode: Environment.Value, s3ClientOverride: Option[AmazonS
   object ReadOrWrite extends Enumeration {
     val read, write = Value
   }
-  private [utils] val s3PathVersionInjector: ReadOrWrite.Value => PathResolution => PathResolution = readOrWrite => pathResolution => {
+
+  private[utils] val s3PathVersionInjector: ReadOrWrite.Value => PathResolution => PathResolution = readOrWrite => pathResolution => {
     lazy val writeVersion: Int = getLatestVersion(pathResolution.paths.head) match {
       case Some(i) => i + 1
       case None => 0
@@ -211,6 +217,8 @@ class FilePathResolver(mode: Environment.Value, s3ClientOverride: Option[AmazonS
 
 object FilePathResolver {
   def apply(mode: Environment.Value): FilePathResolver = new FilePathResolver(mode)
+
   def apply(mode: Environment.Value, version: Int): FilePathResolver = new FilePathResolver(mode, version = Some(version))
+
   def apply(mode: Environment.Value, version: Option[Int]): FilePathResolver = new FilePathResolver(mode, version = version)
 }

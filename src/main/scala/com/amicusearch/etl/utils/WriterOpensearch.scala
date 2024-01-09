@@ -2,22 +2,24 @@ package com.amicusearch.etl.utils
 
 import com.amicusearch.etl.AppParams
 import com.amicusearch.etl.utils.serde.WriteableOpenSearch
-import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.sql.streaming.DataStreamWriter
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.ScalaObjectMapper
+import org.slf4j.LoggerFactory
 import requests.Response
-
+import upickle.default._
+import upickle.default.{macroRW, ReadWriter => RW}
 import scala.util.{Failure, Success, Try}
-
 
 class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Value, url: String, user: String, password: String, indexName: String, timeOut: Option[Long] = None)
                                                 (implicit spark: SparkSession, SQLContext: SQLContext)
-  extends LazyLogging with java.io.Serializable {
+  extends java.io.Serializable {
 
+  private val logger = LoggerFactory.getLogger("WriterOpensearch")
 
+  case class IndexResponse(took: Int, errors: Boolean, items: Array[Map[String, Map[String, Map[String, Any]]]])
+  implicit object IndexResponse {
+    implicit val rw: RW[IndexResponse] = macroRW
+  }
 
   private def genericHttpOp(op: String, data: String, index: Option[String] = None): Unit = {
     val ix = index match {
@@ -78,7 +80,10 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
             headers = Map("Accept" -> "application/x-ndjson", "Content-Type" -> "application/x-ndjson"),
             data = bulkPayload,
             auth = (user, password))
-          logger.info(resp.text())
+          val response = read[IndexResponse](resp.text())
+          if (response.errors) {
+            logger.error("Failed to write batch with error: " + resp.text())
+          }
           rows.length
         })
         logger.info("Wrote " + processed.sum + " rows to " + indexName)

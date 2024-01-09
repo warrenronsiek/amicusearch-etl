@@ -3,12 +3,11 @@ package com.amicusearch.etl.process.courtlistener.transforms
 import com.amicusearch.etl.AppParams
 import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionOutboundCitations, OpinionSummary}
 import com.amicusearch.etl.utils.MLServerGetCitations
-import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
-
+import org.slf4j.LoggerFactory
 import scala.util.{Success, Try}
 
-object CreateOutboundCitations extends LazyLogging {
+object CreateOutboundCitations {
 
   def apply(env: AppParams.Environment.Value, getCitationsUrl: String)
            (implicit spark: SparkSession, SQLContext: SQLContext): Dataset[OpinionSummary] => Dataset[OpinionOutboundCitations] = opinions => {
@@ -44,6 +43,7 @@ object CreateOutboundCitations extends LazyLogging {
       } match {
         case Success(value) => value
         case _ =>
+          val logger = LoggerFactory.getLogger("CreateOutboundCitations")
           logger.error(s"Failed to get outbound citations for opinion ${o.opinion_id} with text ${o.plain_text}")
           Array.empty[String]
       }))

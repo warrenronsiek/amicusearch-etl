@@ -2,15 +2,14 @@ package com.amicusearch.etl.utils
 
 import com.amicusearch.etl.AppParams
 import com.typesafe.config.{Config, ConfigFactory}
-import com.typesafe.scalalogging.LazyLogging
-
+import org.slf4j.LoggerFactory
 import scala.concurrent.duration._
 import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
 import upickle.default._
 import upickle.default.{macroRW, ReadWriter => RW}
 import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 
-class MLServerSummarize(env: AppParams.Environment.Value, summaryUrl: String) extends java.io.Serializable with LazyLogging {
+class MLServerSummarize(env: AppParams.Environment.Value, summaryUrl: String) extends java.io.Serializable {
   private case class Response(summary: String) extends java.io.Serializable
 
   private object Response {
@@ -35,6 +34,7 @@ class MLServerSummarize(env: AppParams.Environment.Value, summaryUrl: String) ex
         ) match {
           case Success(r) => read[Response](r.text).summary
           case Failure(e) =>
+            val logger = LoggerFactory.getLogger("MLServerSummarize")
             logger.error(s"Failed to summarize with error: ${e.getMessage}")
             throw e
         }

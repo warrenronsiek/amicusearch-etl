@@ -1,7 +1,6 @@
 package com.amicusearch.etl.utils
 
 import com.amicusearch.etl.AppParams
-import com.typesafe.scalalogging.LazyLogging
 import upickle.default.macroRW
 import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
 import upickle.default.{macroRW, ReadWriter => RW}
@@ -10,7 +9,7 @@ import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 import scala.concurrent.duration._
 
 
-class MLServerGetCitations(env: AppParams.Environment.Value, citationsUrl: String) extends java.io.Serializable with LazyLogging {
+class MLServerGetCitations(env: AppParams.Environment.Value, citationsUrl: String) extends java.io.Serializable {
 
 
   case class Citation(full:String, cite_type: String) extends java.io.Serializable
@@ -41,6 +40,7 @@ class MLServerGetCitations(env: AppParams.Environment.Value, citationsUrl: Strin
         ) match {
           case Success(r) => read[Response](r.text).citations.map(_.full)
           case Failure(e) =>
+            val logger = org.slf4j.LoggerFactory.getLogger("MLServerGetCitations")
             logger.error(s"Failed to summarize with error: ${e.getMessage}")
             throw e
         }

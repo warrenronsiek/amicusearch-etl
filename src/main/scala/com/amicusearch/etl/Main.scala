@@ -1,29 +1,35 @@
 package com.amicusearch.etl
 
 import com.typesafe.config.{Config, ConfigFactory}
-import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{SQLContext, SparkSession}
-import org.postgresql.Driver
+import org.slf4j.LoggerFactory
 
-object Main extends LazyLogging {
+object Main {
   def run(params: AppParams): Unit = {
-    System.setProperty("log4j.configuration", "file:src/main/resources/log4j.properties")
+    val logger = LoggerFactory.getLogger("Main")
     val conf: Config = ConfigFactory.load(params.env match {
       case AppParams.Environment.prod => "prod.conf"
       case AppParams.Environment.dev => "dev.conf"
       case AppParams.Environment.local => "local.conf"
       case AppParams.Environment.cci => "cci.conf"
     })
+    logger.info(s"Running in ${params.env} mode")
     implicit val spark: SparkSession = SparkSession.builder
       .config(SparkConf.sparkConf(conf.getString("courtlistener.results.checkpoint"))).getOrCreate()
     implicit val sc: SparkContext = spark.sparkContext
     implicit val sql: SQLContext = spark.sqlContext
 
     params.mode match {
-      case AppParams.Mode.CLOpinionProcessor => RunCLOpinionProcessor(params, conf)
-      case AppParams.Mode.CLOpinionInsert => RunCLOpinionInsertion(params, conf)
-      case AppParams.Mode.CLOpinionEmbed => RunCLOpinionEmbedding(params, conf)
+      case AppParams.Mode.CLOpinionProcessor =>
+        logger.info("Running CLOpinionProcessor")
+        RunCLOpinionProcessor(params, conf)
+      case AppParams.Mode.CLOpinionInsert =>
+        logger.info("Running CLOpinionInsert")
+        RunCLOpinionInsertion(params, conf)
+      case AppParams.Mode.CLOpinionEmbed =>
+        logger.info("Running CLOpinionEmbed")
+        RunCLOpinionEmbedding(params, conf)
       case _ => logger.error("Invalid mode")
     }
   }

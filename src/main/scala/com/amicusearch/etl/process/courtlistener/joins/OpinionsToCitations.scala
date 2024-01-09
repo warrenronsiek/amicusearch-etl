@@ -3,10 +3,9 @@ package com.amicusearch.etl.process.courtlistener.joins
 import com.amicusearch.etl.datatypes.courtlistener.citations.{CollectedCitation, ParsedCitation}
 import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.joins.{ClusterOpinion, DocketCluster, OpinionCitation}
-import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 
-object OpinionsToCitations extends LazyLogging{
+object OpinionsToCitations {
   def apply(citations: Dataset[CollectedCitation])(implicit spark: SparkSession, SQLContext: SQLContext):
   Dataset[ClusterOpinion] => Dataset[OpinionCitation] = opinions => {
     import SQLContext.implicits._

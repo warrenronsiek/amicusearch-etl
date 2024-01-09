@@ -1,12 +1,11 @@
 package com.amicusearch.etl.utils.serde
 
-import com.typesafe.scalalogging.LazyLogging
 
 import scala.reflect.runtime.universe._
 import scala.reflect.runtime.{currentMirror => cm}
 import upickle.default._
 
-trait WriteableOpenSearch extends LazyLogging {
+trait WriteableOpenSearch {
   def id_str: String
 
   def parent_id: Option[Long]

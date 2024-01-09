@@ -5,12 +5,14 @@ import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.utils.USRegion
 import org.apache.spark.sql.Dataset
 import org.scalatest.flatspec.AnyFlatSpec
-
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 class CourtsProcessingTest extends AnyFlatSpec with GenericAmicusearchTest {
 
   val parsedCourts: Unit => Dataset[Court] = courtListenerCourts andThen ParseCourts()
   val filteredCourts: Unit => Dataset[Court] = parsedCourts andThen FilterCourts()
   val filteredCourtsByID: Unit => Dataset[Court] = parsedCourts andThen FilterCourts(List("caljustctbut", "gaoyertermct"))
+  logger.info("foo!")
 
   "CourtsFilter" should "identify courts with state names in their names" in {
     assert(FilterCourts.nameContainsRegion(List("Supreme Court of North Carolina"), List(USRegion.north_carolina)))

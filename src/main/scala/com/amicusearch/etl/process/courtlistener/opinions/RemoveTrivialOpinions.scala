@@ -2,7 +2,6 @@ package com.amicusearch.etl.process.courtlistener.opinions
 
 import com.amicusearch.etl.datatypes.courtlistener.opinions.{OpinionsCleanWhitespace, OpinionsParsedHTML}
 import com.amicusearch.etl.utils.NLPParser
-import com.typesafe.scalalogging.LazyLogging
 import edu.stanford.nlp.ling.CoreLabel
 import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
 import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
@@ -10,7 +9,7 @@ import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
 import java.util.Properties
 import scala.annotation.tailrec
 
-object RemoveTrivialOpinions extends LazyLogging{
+object RemoveTrivialOpinions {
 
   case class TrivialStats(tokensScanned: Int = 0, trivialTokens: Int = 0, tokenSet: Set[String] = Set()) {
     private val trivialTokenSet: Set[String] = Set("dissent", "reverse", "concur",

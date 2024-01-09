@@ -15,24 +15,23 @@ import com.amicusearch.etl.process.courtlistener.joins.{ClustersToOpinions, Cour
 import com.amicusearch.etl.process.courtlistener.opinions.{ParseHTML, ParseNulls, ParseWhitespace, RemoveTrivialOpinions}
 import com.amicusearch.etl.process.courtlistener.transforms.{CreateCourtLtree, CreateOutboundCitations, CreateSummary}
 import com.amicusearch.etl.read.ReadCourtsDB
-import com.amicusearch.etl.read.courtlistener.{ReadCourtListenerCitations, ReadCourtListenerClusters, ReadCourtListenerCourts, ReadCourtListenerDockets, ReadCourtListenerOpinions, ReadProcessedOpinions}
-import com.amicusearch.etl.utils.MLServerSummarize
+import com.amicusearch.etl.read.courtlistener._
 import com.typesafe.config.{Config, ConfigFactory}
 import com.warren_r.sparkutils.snapshot.SnapshotTest
-import com.typesafe.scalalogging.LazyLogging
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.log4j.PropertyConfigurator
 import org.apache.spark.sql.{DataFrame, Dataset, SQLContext, SparkSession}
-import org.apache.spark.sql.functions._
+import org.apache.spark.{SparkConf, SparkContext}
 
-trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
+trait GenericAmicusearchTest extends SnapshotTest {
   System.setProperty("log4j.configuration", "file:src/test/resources/log4j.properties")
+  PropertyConfigurator.configure("src/test/resources/log4j.properties")
+
   val sparkConf: SparkConf = new SparkConf()
     .set("appName", "amicusearch-etl")
     .set("spark.sql.files.maxRecordsPerFile", "20000000")
     .set("spark.sql.parquet.binaryAsString", "true")
     .set("spark.sql.session.timeZone", "UTC")
     .set("spark.sql.streaming.checkpointLocation", "/tmp/checkpoint/")
-    .set("spark.driver.extraJavaOptions", "-Dlog4j.configuration=file:src/test/resources/log4j.properties")
   implicit val sparkSession: SparkSession = SparkSession.builder
     .config(sparkConf).master("local[*]").getOrCreate()
   implicit val sc: SparkContext = sparkSession.sparkContext
@@ -40,8 +39,6 @@ trait GenericAmicusearchTest extends SnapshotTest with LazyLogging{
   val conf: Config = ConfigFactory.load("local.conf")
 
   def getResourcePath(resourceName:String): String = getClass.getResource("/" + resourceName).getPath
-
-  import sql.implicits._
 
   val casetextPartitionParams: AppParams = new AppParams(AppParams.Mode.partitionCasetext, AppParams.Environment.local)
 

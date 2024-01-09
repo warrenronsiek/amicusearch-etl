@@ -1,11 +1,10 @@
 package com.amicusearch.etl.utils
 
 import com.amicusearch.etl.utils.CourtMetadata.{federalDistrictToAppeal, pre1891Circuit}
-import com.typesafe.scalalogging.LazyLogging
-
+import org.slf4j.LoggerFactory
 import scala.util.Try
 
-object CourtStructure extends LazyLogging{
+object CourtStructure extends {
   private val ordinalMap: Map[String, Int] = Map(
     "first" -> 1,
     "second" -> 2,
@@ -133,6 +132,7 @@ object CourtStructure extends LazyLogging{
   def getCourtLtree(courtName:String): Option[String] = {
     lazy val location: Option[String] = getRegion(courtName)
     lazy val number: Option[Int] = getNumber(courtName)
+    lazy val logger = org.slf4j.LoggerFactory.getLogger("getCourtLtree")
 
     courtName match {
       case _ if "[Aa]ppeals?".r.findFirstIn(courtName).isDefined && location.isEmpty && number.isDefined =>
