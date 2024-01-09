@@ -16,6 +16,8 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
 
   private val logger = LoggerFactory.getLogger("WriterOpensearch")
 
+  logger.info(s"Initializing $env WriterOpensearch with url $url and index $indexName and user $user and pass $password")
+
   case class Shards(total: Int, successful: Int, failed: Int)
 
   implicit object Shards {
@@ -70,7 +72,9 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
     } match {
       case Success(_) => logger.info("Successfully created index " + indexName)
       case Failure(exception) if exception.getMessage contains ("already exists") => logger.info("Index " + indexName + " already exists")
-      case Failure(exception) => throw exception
+      case Failure(exception) =>
+        logger.error("Failed to create index " + indexName + " with error: " + exception.getMessage)
+        throw exception
     }
     Thread.sleep(5000)
   }
