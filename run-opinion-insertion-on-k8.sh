@@ -25,11 +25,11 @@ nohup spark-submit \
   --name amicusearch-etl \
   --driver-class-path /opt/spark/jars/postgresql-42.6.0.jar \
   --class com.amicusearch.etl.Main \
-  --conf spark.driver.memory=15g \
+  --conf spark.driver.memory=10g \
   --conf spark.driver.cores=3 \
   --conf spark.executor.instances=3 \
   --conf spark.executor.cores=6 \
-  --conf spark.executor.memory=30g \
+  --conf spark.executor.memory=10g \
   --conf spark.driver.extraClassPath=/opt/spark/jars/postgresql-42.6.0.jar \
   --conf spark.executor.extraClassPath=/opt/spark/jars/postgresql-42.6.0.jar \
   --conf spark.kubernetes.driver.volumes.hostPath.inputvol.mount.path=/tmp/fsmount/ \
