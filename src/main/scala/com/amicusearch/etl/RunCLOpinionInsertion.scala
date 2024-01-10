@@ -17,28 +17,16 @@ object RunCLOpinionInsertion {
   implicit val sc: SparkContext = spark.sparkContext
   implicit val sql: SQLContext = spark.sqlContext
 
-  private val logger = LoggerFactory.getLogger("RunCLOpinionInsertion")
-
   def apply(appParams: AppParams, config: Config): Unit = {
-//    val writer = WriterOpensearch[ConformedOpinion](
-//      appParams.env,
-//      config.getString("opensearch.url"),
-//      config.getString("opensearch.username"),
-//      System.getenv("AMICUSEARCH_OPENSEARCH_PASSWORD"),
-//      "opinions",
-//      Some(10000)
-//    )(spark, sql)
-
-//    insertion(config.getString("courtlistener.results.local"), appParams.env, writer)
-
-    val writer = WriterParquet(
-      config.getString("courtlistener.results.local_temp"),
-      List("court_id")
+    val writer = WriterOpensearch[ConformedOpinion](
+      appParams.env,
+      config.getString("opensearch.url"),
+      config.getString("opensearch.username"),
+      System.getenv("AMICUSEARCH_OPENSEARCH_PASSWORD"),
+      "opinions"
     )(spark, sql)
 
-    logger.info("instantiating read")
-    val df = ReadProcessedOpinions(config.getString("courtlistener.results.local"), appParams.env).apply()
-    logger.info(s"count: ${df.count()}")
+    insertion(config.getString("courtlistener.results.local"), appParams.env, writer)
   }
 
   def insertion(path: String, env: AppParams.Environment.Value, writer: WriterOpensearch[ConformedOpinion]): Unit =

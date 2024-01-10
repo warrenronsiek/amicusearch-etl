@@ -23,7 +23,8 @@ object RunCLOpinionEmbedding {
       config.getString("opensearch.url"),
       config.getString("opensearch.username"),
       System.getenv("AMICUSEARCH_OPENSEARCH_PASSWORD"),
-      "embeddings", Some(10000))(spark, sql)
+      "embeddings"
+    )(spark, sql)
 
     insertion(config.getString("courtlistener.results.local"), appParams.env, writer)
   }
