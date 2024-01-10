@@ -1,12 +1,12 @@
 package com.amicusearch.etl
 
-import com.amicusearch.etl.datatypes.courtlistener.citations.{CollectedCitation, ParsedCitation}
+import com.amicusearch.etl.datatypes.courtlistener.citations.CollectedCitation
 import com.amicusearch.etl.datatypes.courtlistener.clusters.ClusterWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.courts.Court
 import com.amicusearch.etl.datatypes.courtlistener.dockets.DocketsWithNulls
 import com.amicusearch.etl.datatypes.courtlistener.joins.OpinionCitation
 import com.amicusearch.etl.datatypes.courtlistener.opinions.OpinionsCleanWhitespace
-import com.amicusearch.etl.datatypes.courtlistener.transforms.{OpinionOutboundCitations, OpinionSummary}
+import com.amicusearch.etl.datatypes.courtlistener.transforms.OpinionOutboundCitations
 import com.amicusearch.etl.process.courtlistener.citations.{CollectCitations, ConcatCitations, ParseCitations}
 import com.amicusearch.etl.process.courtlistener.clusters.ClusterParseNulls
 import com.amicusearch.etl.process.courtlistener.courts.{FilterCourts, ParseCourts}
@@ -18,7 +18,8 @@ import com.amicusearch.etl.read.courtlistener._
 import com.amicusearch.etl.utils.{USRegion, WriterParquet}
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{Dataset, SQLContext, SaveMode, SparkSession}
+import org.apache.spark.sql.{Dataset, SQLContext, SparkSession}
+
 import scala.collection.JavaConverters._
 object RunCLOpinionProcessor {
 

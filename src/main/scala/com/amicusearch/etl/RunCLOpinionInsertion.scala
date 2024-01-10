@@ -3,13 +3,10 @@ package com.amicusearch.etl
 import com.amicusearch.etl.datatypes.courtlistener.opensearch.ConformedOpinion
 import com.amicusearch.etl.opensearch.ConformOpinions
 import com.amicusearch.etl.read.courtlistener.ReadProcessedOpinions
-import com.amicusearch.etl.utils.{WriterOpensearch, WriterParquet}
+import com.amicusearch.etl.utils.WriterOpensearch
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{SQLContext, SparkSession}
-import org.slf4j.LoggerFactory
-import java.nio.file.{FileSystems, Files}
-import scala.collection.JavaConverters._
 
 object RunCLOpinionInsertion {
 
