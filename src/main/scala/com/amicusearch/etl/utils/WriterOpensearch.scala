@@ -74,13 +74,11 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
         logger.error("Failed to create index " + indexName + " with error: " + exception.getMessage)
         throw exception
     }
-    Thread.sleep(5000)
   }
 
   initDB()
 
   val write: Dataset[T] => Unit = df => {
-
     val ws: DataStreamWriter[T] = df.writeStream.foreachBatch((df: Dataset[T], _: Long) => {
       logger.info(s"Beginning write to $indexName")
       df.foreachPartition((partition: Iterator[T]) => {
