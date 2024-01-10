@@ -7,12 +7,14 @@ import com.amicusearch.etl.utils.{WriterOpensearch, WriterParquet}
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{SQLContext, SparkSession}
-
+import org.slf4j.LoggerFactory
 object RunCLOpinionInsertion {
 
   implicit val spark: SparkSession = SparkSession.builder.getOrCreate()
   implicit val sc: SparkContext = spark.sparkContext
   implicit val sql: SQLContext = spark.sqlContext
+
+  private val logger = LoggerFactory.getLogger("RunCLOpinionInsertion")
 
   def apply(appParams: AppParams, config: Config): Unit = {
 //    val writer = WriterOpensearch[ConformedOpinion](
@@ -32,8 +34,7 @@ object RunCLOpinionInsertion {
     )(spark, sql)
 
     ReadProcessedOpinions(config.getString("courtlistener.results.local"), appParams.env) andThen
-      ConformOpinions() andThen
-      writer.write
+      (df => logger.info(s"count: ${df.count()}"))
   }
 
   def insertion(path: String, env: AppParams.Environment.Value, writer: WriterOpensearch[ConformedOpinion]): Unit =
