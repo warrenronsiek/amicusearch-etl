@@ -8,6 +8,9 @@ import com.typesafe.config.Config
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.slf4j.LoggerFactory
+import java.nio.file.{FileSystems, Files}
+import scala.collection.JavaConverters._
+
 object RunCLOpinionInsertion {
 
   implicit val spark: SparkSession = SparkSession.builder.getOrCreate()
@@ -33,8 +36,9 @@ object RunCLOpinionInsertion {
       List("court_id")
     )(spark, sql)
 
-    ReadProcessedOpinions(config.getString("courtlistener.results.local"), appParams.env) andThen
-      (df => logger.info(s"count: ${df.count()}"))
+    logger.info("instantiating read")
+    val df = ReadProcessedOpinions(config.getString("courtlistener.results.local"), appParams.env).apply()
+    logger.info(s"count: ${df.count()}")
   }
 
   def insertion(path: String, env: AppParams.Environment.Value, writer: WriterOpensearch[ConformedOpinion]): Unit =
