@@ -65,11 +65,89 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
 
   private def initDB(): Unit = {
     Try {
-      this.genericHttpOp("PUT", """{}""")
-      this.genericHttpOp("PUT", """{"mappings":{"properties":{"opinion_to_embedding":{"type":"join","relations":{"opinion":"embedding"}}}}}""")
+      this.genericHttpOp("PUT", """{
+                                  |  "mappings": {
+                                  |    "properties": {
+                                  |      "embedding": {
+                                  |        "type": "knn_vector",
+                                  |        "dimension": 1024
+                                  |      },
+                                  |      "opinion_to_embedding": {
+                                  |        "type": "join",
+                                  |        "relations": {
+                                  |          "opinion": "embedding"
+                                  |        }
+                                  |      },
+                                  |      "court_citation_string": {
+                                  |        "type": "keyword"
+                                  |      },
+                                  |      "case_name": {
+                                  |        "type": "text",
+                                  |        "analyzer": "english"
+                                  |      },
+                                  |      "case_name_short": {
+                                  |        "type": "text",
+                                  |        "analyzer": "english"
+                                  |      },
+                                  |      "citations": {
+                                  |        "type": "text",
+                                  |        "analyzer": "english"
+                                  |      },
+                                  |      "citation_count": {
+                                  |        "type": "integer"
+                                  |      },
+                                  |      "court_full_name": {
+                                  |        "type": "keyword"
+                                  |      },
+                                  |      "court_id": {
+                                  |        "type": "keyword"
+                                  |      },
+                                  |      "court_short_name": {
+                                  |        "type": "keyword"
+                                  |      },
+                                  |      "date_filed": {
+                                  |        "type": "date"
+                                  |      },
+                                  |      "docket_id": {
+                                  |        "type": "text"
+                                  |      },
+                                  |      "docket_number": {
+                                  |        "type": "text"
+                                  |      },
+                                  |      "docket_number_core": {
+                                  |        "type": "text"
+                                  |      },
+                                  |      "generated_summary": {
+                                  |        "type": "text",
+                                  |        "analyzer": "english"
+                                  |      },
+                                  |      "ltree": {
+                                  |        "type": "keyword"
+                                  |      },
+                                  |      "outbound_citations": {
+                                  |        "type": "text",
+                                  |        "analyzer": "english"
+                                  |      },
+                                  |      "plain_text": {
+                                  |        "type": "text",
+                                  |        "analyzer": "english"
+                                  |      },
+                                  |        "precedential_status": {
+                                  |            "type": "keyword"
+                                  |        },
+                                  |      "slug": {
+                                  |        "type": "keyword"
+                                  |      },
+                                  |      "text": {
+                                  |        "type": "text",
+                                  |        "analyzer": "english"
+                                  |      }
+                                  |    }
+                                  |  }
+                                  |}""".stripMargin)
     } match {
       case Success(_) => logger.info("Successfully created index " + indexName)
-      case Failure(exception) if exception.getMessage contains ("already exists") => logger.info("Index " + indexName + " already exists")
+      case Failure(exception) if exception.getMessage contains "already exists" => logger.info("Index " + indexName + " already exists")
       case Failure(exception) =>
         logger.error("Failed to create index " + indexName + " with error: " + exception.getMessage)
         throw exception
