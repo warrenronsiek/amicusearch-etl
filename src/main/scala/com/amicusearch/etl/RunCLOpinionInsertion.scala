@@ -6,7 +6,7 @@ import com.amicusearch.etl.read.courtlistener.ReadProcessedOpinions
 import com.amicusearch.etl.utils.WriterOpensearch
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{SQLContext, SparkSession}
+import org.apache.spark.sql.{DataFrame, SQLContext, SparkSession}
 
 object RunCLOpinionInsertion {
 
@@ -28,6 +28,13 @@ object RunCLOpinionInsertion {
 
   def insertion(path: String, env: AppParams.Environment.Value, writer: WriterOpensearch[ConformedOpinion]): Unit =
     (ReadProcessedOpinions(path, env) andThen
+      ((df: DataFrame) => env match {
+        // if we are testing, we don't want to embed the whole testing dataset
+        case AppParams.Environment.local => df.limit(1)
+        case AppParams.Environment.cci => df.limit(1)
+        case AppParams.Environment.dev => df.limit(100)
+        case _ => df
+      }) andThen
       ConformOpinions() andThen
       writer.write)()
 }
