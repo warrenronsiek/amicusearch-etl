@@ -160,7 +160,7 @@ class WriterOpensearch[T <: WriteableOpenSearch](env: AppParams.Environment.Valu
     val ws: DataStreamWriter[T] = df.writeStream.foreachBatch((df: Dataset[T], _: Long) => {
       logger.info(s"Beginning write to $indexName")
       df.foreachPartition((partition: Iterator[T]) => {
-        val processed: Iterator[Int] = partition.grouped(100).map((rows: Seq[T]) => {
+        val processed: Iterator[Int] = partition.grouped(10).map((rows: Seq[T]) => {
           logger.info("Writing batch of " + rows.length + " rows to " + indexName)
           val bulkPayload: String = rows.map((row: T) => {
             row.parent_id match {
