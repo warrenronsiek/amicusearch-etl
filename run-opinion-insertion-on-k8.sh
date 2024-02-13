@@ -48,4 +48,4 @@ nohup spark-submit \
   --conf spark.hadoop.fs.s3a.access.key=$AWS_ACCESS_KEY_ID \
   --conf spark.hadoop.fs.s3a.secret.key=$AWS_SECRET_ACCESS_KEY \
   s3a://amicusearch/etl/AmicusearchETL.jar \
-  --mode CLOpinionInsert --env dev --states FL --includeFederal true > spark.log 2>&1 &
+  --mode CLOpinionInsert --env prod --states FL --includeFederal true > spark.log 2>&1 &

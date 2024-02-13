@@ -1,11 +1,16 @@
 package com.amicusearch.etl.utils.serde
 
 
+import org.slf4j.{Logger, LoggerFactory}
+
 import scala.reflect.runtime.universe._
 import scala.reflect.runtime.{currentMirror => cm}
 import upickle.default._
 
 trait WriteableOpenSearch {
+
+  val logger: Logger = LoggerFactory.getLogger("WriteableOpenSearch")
+
   def id_str: String
 
   def parent_id: Option[Long]
@@ -25,27 +30,32 @@ trait WriteableOpenSearch {
       if (ignoreFields.getOrElse(Set()).contains(field.name.toString)) {
         None
       } else {
-        fieldValue match {
-          case arr: Array[Double] =>
-            Some(s""""${field.name.toString}": [${arr.mkString(", ")}]""")
-          case arr: Array[String] =>
-            Some(s""""${field.name.toString}": [${arr.map(s => s"""${write(s)}""").mkString(", ")}]""")
-          case Some(arr: Array[Double]) =>
-            Some(s""""${field.name.toString}": [${arr.mkString(", ")}]""")
-          case Some(arr: Array[String]) =>
-            Some(s""""${field.name.toString}": [${arr.map(s => s"""${write(s)}""").mkString(", ")}]""")
-          case n: Number =>
-            Some(s""""${field.name.toString}": $n""")
-          case Some(n: Number) =>
-            Some(s""""${field.name.toString}": $n""")
-          case s: String =>
-            Some(s""""${field.name.toString}": ${write(s)}""")
-          case Some(s: String) =>
-            Some(s""""${field.name.toString}": ${write(s)}""")
-          case None =>
-            None
-          case _ =>
-            Some(s""""${field.name.toString}": "${fieldValue.toString}"""")
+        try {
+          fieldValue match {
+            case arr: Array[Double] =>
+              Some(s""""${field.name.toString}": [${arr.mkString(", ")}]""")
+            case arr: Array[String] =>
+              Some(s""""${field.name.toString}": [${arr.map(s => s"""${write(s)}""").mkString(", ")}]""")
+            case Some(arr: Array[Double]) =>
+              Some(s""""${field.name.toString}": [${arr.mkString(", ")}]""")
+            case Some(arr: Array[String]) =>
+              Some(s""""${field.name.toString}": [${arr.map(s => s"""${write(s)}""").mkString(", ")}]""")
+            case n: Number =>
+              Some(s""""${field.name.toString}": $n""")
+            case Some(n: Number) =>
+              Some(s""""${field.name.toString}": $n""")
+            case s: String =>
+              Some(s""""${field.name.toString}": ${write(s)}""")
+            case Some(s: String) =>
+              Some(s""""${field.name.toString}": ${write(s)}""")
+            case None =>
+              None
+            case _ =>
+              Some(s""""${field.name.toString}": "${fieldValue.toString}"""")
+          }} catch {
+            case _: NullPointerException =>
+              logger.error(s"Error serializing field ${field} with value $fieldValue")
+              None
         }
       }
     }
